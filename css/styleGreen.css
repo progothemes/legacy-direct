@@ -1,0 +1,12 @@
+/* outdated colorscheme...
+body { background-image:url(../images/bg_green.png); }
+#hdr { background:url(../images/hdr_green.png) repeat-x 0 0; }
+#arrow { background-image: url(../images/arrow_green.png) }
+#toparr { background-image: url(../images/toparrow_green.png) }
+#primary .block { background-image: url(../images/boxbg_green.png) }
+#container { background-image:url(../images/main_green.png); }
+#prod, #main h1.page-title { color: #333 }
+#pimg { background-image: url(../images/prod_bg_green.png) }
+#getyours { background-image: url(../images/getyours_green.png) }
+#primary form input.sbtn.buynow { background-image: url(../images/buynow_light.png) }
+*/

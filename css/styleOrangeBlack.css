@@ -1,0 +1,11 @@
+body { background:#f38b10 url(../images/OrangeBlack/bg.png) repeat-x 0 0  }
+#toparr { background-image: url(../images/BlackGrey/toparrow.png); text-shadow: none }
+#getyours { background-image: url(../images/BlackGrey/getyours.jpg); color: #fff }
+#getyours .s { background-image: url(../images/sw.gif); -moz-opacity: 0.5; opacity: 0.5; filter: alpha(opacity=50);}
+#getyours .sale { color: #fff; text-shadow: -1px -1px 2px rgba(0, 0, 0, 0.65); }
+#arrow { background-image: url(../images/BlackGrey/arrow.png) }
+.pform { background-image: url(../images/OrangeBlack/form.png) }
+.pform fieldset, .pform h3 { color: #fff }
+.pform input.sbtn.buynow { background-image: url(../images/OrangeBlack/btn.png); text-shadow: -1px -1px 3px rgba(0, 0, 0, 0.86); }
+
+#wpadminbar .quicklinks #wp-admin-bar-progo_colorschemeOrangeBlack a { font-weight: bold; }

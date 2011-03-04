@@ -1,0 +1,9 @@
+body { background:#fff url(../images/StrongBlue/bg.png) repeat-x 0 0  }
+#container { background-image: url(../images/StrongBlue/main.png) }
+#prod, #main #prod h1, #main h1.page-title { color: #fff; }
+#toparr { background-image: url(../images/StrongBlue/toparrow.png); text-shadow: none }
+#getyours { background-image: url(../images/StrongBlue/getyours.png); color: #333 }
+#arrow { background-image: url(../images/StrongBlue/arrow.png) }
+.pform { background-image: url(../images/StrongBlue/form.png) }
+
+#wpadminbar .quicklinks #wp-admin-bar-progo_colorschemeStrongBlue a { font-weight: bold; }

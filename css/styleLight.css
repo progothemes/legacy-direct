@@ -1,0 +1,11 @@
+/* outdated colorscheme...
+body { background:#f4f4f4 url(../images/bg_light.png) repeat-x 0 0  }
+#hdr { background:url(../images/hdr_light.png) repeat-x 0 0  }
+#container { background:none }
+#prod, #main h1.page-title { color: #333 }
+#pimg { background-image: url(../images/prod_bg_light.png) }
+#arrow { background-image: url(../images/arrow_light.png); color: #3e3e3e }
+#toparr { background-image: url(../images/toparrow_light.png) }
+#primary .block { background-image: url(../images/boxbg_light.png) }
+#primary form input.sbtn.buynow { background-image: url(../images/buynow_light.png) }
+*/
