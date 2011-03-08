@@ -276,7 +276,7 @@ function progo_welcome() {
         	<div id="progo_welcome" class="postbox">
             	<h3 class="hndle"><span>Welcome</span></h3>
                 <div class="inside">
-                    <p><img src="<?php bloginfo( 'template_url' ); ?>/images/logo_progo.png" style="float:right; margin: 0 0 21px 21px" alt="ProGo Themes" />ProGo Themes are easy and quick to set up using our step-by-step process below. <a href="http://www.progothemes.com/ProGo_QuickStartGuide.pdf" target="_blank">Click here to download the ProGo Themes Quick Start Guide (PDF)</a></p>
+                    <p><img src="<?php bloginfo( 'template_url' ); ?>/images/logo_progo.png" style="float:right; margin: 0 0 21px 21px" alt="ProGo Themes" />ProGo Themes are easy and quick to set up using our step-by-step process below. <a href="http://www.progo.com/ProGo_QuickStartGuide.pdf" target="_blank">Click here to download the ProGo Themes Quick Start Guide (PDF)</a></p>
                     <?php progo_dashboard_widget_function(); ?>
                 </div>
             </div>
@@ -347,7 +347,7 @@ function progo_custom_login_url() {
 	if ( get_option( 'progo_logo' ) != '' ) {
 		return get_bloginfo( 'url' );
 	} // else
-	return 'http://www.progothemes.com';
+	return 'http://www.progo.com';
 }
 endif;
 if ( ! function_exists( 'progo_site_settings_page' ) ):
@@ -1831,7 +1831,7 @@ function progo_update_check($data) {
 		'user-agent' => 'WordPress/'. $wp_version .'; '. get_bloginfo('url')
 	);
 
-	$raw_response = wp_remote_post('http://www.progothemes.com/updatecheck/', $checkplz);
+	$raw_response = wp_remote_post('http://www.progo.com/updatecheck/', $checkplz);
 	
 	if (!is_wp_error($raw_response) && ($raw_response['response']['code'] == 200))
 		$response = unserialize($raw_response['body']);
