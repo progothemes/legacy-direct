@@ -64,7 +64,7 @@ if ( $direct[plink] != 0 ) {
 			</div><!-- #main -->
             <div class="grid_4 omega" id="side">
             <form class="pform" enctype="multipart/form-data" action="<?php echo ($direct[plink]>0 ? get_permalink($post->ID) .'?progo_action=step2' : '" onsubmit="return false;"'); ?>" method="post" name="product_<?php echo absint($direct[plink]); ?>" id="product_<?php echo absint($direct[plink]); ?>">
-            <table width="96%" cellpadding="0" cellspacing="0" height="455" class="wpsc_checkout_table">
+            <table width="96%" cellpadding="0" cellspacing="0" class="wpsc_checkout_table">
             <tr><td valign="top" height="56"><h3 id="rh"><?php echo nl2br(esc_html($direct[rightheadline])); ?></h3></td></tr>
             <tr><td><input type="hidden" name="wpsc_ajax_action" value="add_to_cart" />
 			<input type="hidden" name="product_id" value="<?php echo absint($direct[plink]); ?>" />
@@ -76,7 +76,7 @@ if ( $direct[plink] != 0 ) {
 				echo '<label class="cb"><input type="checkbox" id="edit" name="edit" /> Add different Shipping Address</label>';
 			} ?>
             </td></tr>
-            <tr><td align="center" valign="top"><?php echo $options['credentials']; ?></td></tr>
+            <tr><td class="cred"><?php echo $options['credentials']; ?></td></tr>
             <tr><td height="63"><?php echo progo_direct_submitbtn( $direct[plink], $direct[buynow] ); ?></td></tr>
             </table>
             </form>
