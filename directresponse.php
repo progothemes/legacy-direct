@@ -64,41 +64,22 @@ if ( $direct[plink] != 0 ) {
 			</div><!-- #main -->
             <div class="grid_4 omega" id="side">
             <form class="pform" enctype="multipart/form-data" action="<?php echo ($direct[plink]>0 ? get_permalink($post->ID) .'?progo_action=step2' : '" onsubmit="return false;"'); ?>" method="post" name="product_<?php echo absint($direct[plink]); ?>" id="product_<?php echo absint($direct[plink]); ?>">
-            <h3 id="rh"><?php echo nl2br(esc_html($direct[rightheadline])); ?></h3>
-            <input type="hidden" name="wpsc_ajax_action" value="add_to_cart" />
+            <table width="96%" cellpadding="0" cellspacing="0" height="455" class="wpsc_checkout_table">
+            <tr><td valign="top" height="56"><h3 id="rh"><?php echo nl2br(esc_html($direct[rightheadline])); ?></h3></td></tr>
+            <tr><td><input type="hidden" name="wpsc_ajax_action" value="add_to_cart" />
 			<input type="hidden" name="product_id" value="<?php echo absint($direct[plink]); ?>" />
-            <fieldset id="billing">
-            <label for="firstname">First Name*</label><input type="text" name="firstname" size="27" maxlength="40" value="" class="text req" />
-            <label for="lastname">Last Name*</label><input type="text" name="lastname" size="27" maxlength="40" value="" class="text req" />
-            <label for="address">Address*</label><input type="text" name="address" size="27" maxlength="40" value="" class="text req" />
-            <label for="city">City*</label><input type="text" name="city" size="27" maxlength="40" value="" class="text req" />
-            <label for="state">State*</label><select name="state" class="req"><option></option><?php
-			$states = array(15 => 'AK', 14 => 'AL', 17 => 'AR', 16 => 'AZ', 18 => 'CA', 19 => 'CO', 20 => 'CT', 61 => 'DC', 21 => 'DE', 22 => 'FL', 23 => 'GA', 24 => 'HI', 28 => 'IA', 25 => 'ID', 26 => 'IL', 27 => 'IN', 29 => 'KS', 30 => 'KY', 31 => 'LA', 34 => 'MA', 33 => 'MD', 32 => 'ME', 35 => 'MI', 36 => 'MN', 38 => 'MO', 37 => 'MS', 39 => 'MT', 46 => 'NC', 47 => 'ND', 40 => 'NE', 42 => 'NH', 43 => 'NJ', 44 => 'NM', 41 => 'NV', 45 => 'NY', 48 => 'OH', 49 => 'OK', 50 => 'OR', 51 => 'PA', 52 => 'RI', 53 => 'SC', 54 => 'SD', 55 => 'TN', 56 => 'TX', 57 => 'UT', 59 => 'VA', 58 => 'VT', 60 => 'WA', 63 => 'WI', 62 => 'WV', 64 => 'WY');
-			foreach($states as $key => $val) echo '<option value="'. $key .'">'. $val .'</option>';
-			?></select><span class="zip"><label for="zip" class="sh">Zip*</label><input type="text" name="zip" size="6" maxlength="10" value="" class="text req" /></span>
-            <label for="phone">Phone*</label><input type="text" name="phone" size="27" maxlength="40" value="" class="text req" />
-            <label for="email">Email*</label><input type="text" name="email" size="27" maxlength="40" value="" class="text req" />
-            </fieldset>
-            <?php	if ( ( absint( get_option( 'do_not_use_shipping' ) ) == 1 ) || ( $direct[productmeta][no_shipping] == 1 ) ) {
-				echo '<div id="cred" class="noship">';
-			} else { ?>
-            <fieldset id="shipping" style="display:none; height: 231px">
-            <div class="inf">Shipping Info</div>
-            <label for="s_firstname">First Name</label><input type="text" name="s_firstname" size="27" maxlength="40" value="" class="text" />
-            <label for="s_lastname">Last Name</label><input type="text" name="s_lastname" size="27" maxlength="40" value="" class="text" />
-            <label for="s_address">Address</label><input type="text" name="s_address" size="27" maxlength="40" value="" class="text" />
-            <label for="s_city">City</label><input type="text" name="s_city" size="27" maxlength="40" value="" class="text" />
-            <label for="s_zip">Zip</label><input type="text" name="s_zip" size="27" maxlength="10" value="" class="text" />
-            <label for="s_phone">Phone</label><input type="text" name="s_phone" size="27" maxlength="40" value="" class="text" />
-            </fieldset>
-            <label class="cb"><input type="checkbox" id="edit" name="edit" /> Add different Shipping Address</label>
-            <div id="cred">
-            <?php } 
-			echo $options['credentials']; ?></div>
-            <?php echo progo_direct_submitbtn( $direct[plink], $direct[buynow] ); ?>
+            <?php
+            $includeshipping = true;
+			if( ( absint( get_option( 'do_not_use_shipping' ) ) == 1 ) || ( $direct[productmeta][no_shipping] == 1 ) ) $includeshipping = false;
+			progo_direct_form_fields( $includeshipping );
+			if ( $includeshipping ) {
+				echo '<label class="cb"><input type="checkbox" id="edit" name="edit" /> Add different Shipping Address</label>';
+			} ?>
+            </td></tr>
+            <tr><td align="center" valign="top"><?php echo $options['credentials']; ?></td></tr>
+            <tr><td height="63"><?php echo progo_direct_submitbtn( $direct[plink], $direct[buynow] ); ?></td></tr>
+            </table>
             </form>
-            <!--/div>
-            <div id="secondary"-->
             <?php get_sidebar(); ?>
             </div>
 		</div><!-- #container -->

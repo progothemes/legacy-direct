@@ -610,8 +610,9 @@ a.termsandconds{
 	border: 1px solid red;
 }
 p.validation-error {
-	color: red;
-	margin-bottom: 0;
+	color: #fff;
+	padding: 10px;
+	background-color: #f00
 }
 
 /*

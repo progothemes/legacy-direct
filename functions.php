@@ -194,6 +194,123 @@ function progo_prepare_transaction_results() {
 	$purchase_log['find_us'] = '<table><tr class="firstrow"><td>Our Company Info</td></tr><tr><td>'. esc_html( $options['companyinfo'] ) .'</td></tr></table>';
 }
 endif;
+if ( ! function_exists( 'progo_direct_form_fields' ) ):
+/**
+ * outputs the BILLING/SHIPPING ADD TO CART form on the top right of DIRECT RESPONSE pages
+ * @param whether or not to include the SHIPPING fields
+ * @param whether or not to hide (display:none) both fieldsets
+ * @since Direct 1.0.59
+ */
+function progo_direct_form_fields( $includeshipping = true, $hideboth = false ) {
+	global $wpsc_checkout;
+	$wpsc_checkout = new wpsc_checkout();
+	$formfields = array(
+		'billing' => array(),
+		'shipping' => array()
+	);
+	foreach ( $wpsc_checkout->checkout_items as $check ) {
+		if( strpos($check->unique_name, 'billing') === 0 ) {
+			$formfields[billing][] = $check;
+		} elseif( strpos($check->unique_name, 'shipping') === 0 ) {
+			$formfields[shipping][] = $check;
+		}
+	}
+	
+	foreach($formfields as $k => $fieldset) {
+		if ( $k == 'billing' ) {
+			echo '<fieldset id="billing"'. ($hideboth ? ' style="display:none"' : '') .'>';
+		} else {
+			 if ( $includeshipping == false ) return;
+			 ?>
+				<fieldset id="shipping" style="display:none">
+				<div class="inf">Shipping Info</div><?php
+		}
+	
+		$shortenzip = false;
+	foreach( $fieldset as $i => $item ) {
+		if ( $item->type == 'address' ) $item->type = 'text';
+		$wpsc_checkout->checkout_item = $item;
+		if(wpsc_disregard_shipping_state_fields() || wpsc_disregard_billing_state_fields()) { ?><div style="display:none">
+			 <label for='<?php echo wpsc_checkout_form_element_id(); ?>'>
+			 <?php echo wpsc_checkout_form_name();?>
+			 </label>
+			 <?php echo wpsc_checkout_form_field();?>
+			  <?php if(wpsc_the_checkout_item_error() != ''): ?>
+					 <p class='validation-error'><?php echo wpsc_the_checkout_item_error(); ?></p>
+			 <?php endif; ?></div>
+		<?php
+        } else {
+		if( (strpos($item->unique_name, 'postcode') > 0) && $shortenzip ) {
+				echo '<span class="zip">';
+			}
+		?>
+		<label for='<?php echo wpsc_checkout_form_element_id(); ?>'>
+		<?php echo str_replace( 'Postal Code', 'Zip', wpsc_checkout_form_name() );?>
+		</label>
+		<?php
+		
+		$fieldcode = wpsc_checkout_form_field();
+		
+		if ( $item->type == 'country' ) {
+			// add extra STATE label
+			$lookfor = "<div id='region_select_".$item->id."'><select";
+			$statestart = strpos($fieldcode, $lookfor);
+			if( $statestart > 0 ) {
+				
+				$selected_country = $_SESSION['wpsc_delivery_country'];
+				$selected_region = $_SESSION['wpsc_delivery_region'];
+			echo "<div style='display:none' title='sc $selected_country sr $selected_region'></div>";
+				if ( empty( $selected_country ) )
+					$selected_country = esc_attr( get_option( 'base_country' ) );
+				if ( empty( $selected_region ) )
+					$selected_region = esc_attr( get_option( 'base_region' ) );
+				global $wpdb;
+				$region_list = $wpdb->get_results( "SELECT `" . WPSC_TABLE_REGION_TAX . "`.* FROM `" . WPSC_TABLE_REGION_TAX . "`, `" . WPSC_TABLE_CURRENCY_LIST . "`  WHERE `" . WPSC_TABLE_CURRENCY_LIST . "`.`isocode` IN('" . $selected_country . "') AND `" . WPSC_TABLE_CURRENCY_LIST . "`.`id` = `" . WPSC_TABLE_REGION_TAX . "`.`country_id`", ARRAY_A );
+				
+				$statescode = substr($fieldcode, $statestart + strlen($lookfor));
+				$states = array();
+				$abbr = array();
+				foreach($region_list as $s) {
+					$states[] = $s['name'];
+					$abbr[] = $s['code'];
+				}
+				$statescode = str_replace($states,$abbr,$statescode);
+				// for whatever reason, wpsc does not set the state by default, so
+				if(strpos($statescode,"selected") === false) {
+					$statescode = str_replace("value='$selected_region'", "value='$selected_region' selected='selecte'", $statescode);
+				}
+				
+				if(strpos($fieldset[$i+1]->unique_name, 'postcode') > 0) $shortenzip = true;
+				
+				$fieldcode = substr($fieldcode, 0, $statestart) ."<label class='statelabel label". $item->id ."'>State <span class='asterix'>*</span></label><div id='region_select_".$item->id."'><select". ($shortenzip ? " style='width:54px'" : ""). $statescode;
+				$fieldcode = str_replace('set_shipping_country', 'progo_set_shipping_country', $fieldcode);
+				$fieldcode = str_replace('set_billing_country', 'progo_set_billing_country', $fieldcode);
+			}
+		} else {
+			// ProGo custom css classes
+			$classes = array();
+			if ( $item->type == 'text' ) $classes[] = 'txt';
+			if ( $item->mandatory == 1 ) $classes[] = 'req';
+			
+			$classes = implode(' ',$classes) .' ';
+			$fieldcode = str_replace("class='", "class='". $classes, $fieldcode);
+		}
+		echo $fieldcode;
+		?>
+		<?php if(wpsc_the_checkout_item_error() != ''): ?>
+		<p class='validation-error'><?php echo wpsc_the_checkout_item_error(); ?></p>
+		<?php endif;
+		
+			if( (strpos($item->unique_name, 'postcode') > 0) && $shortenzip ) {
+				echo '</span>';
+			}
+		}
+	} ?>
+	</fieldset>
+	<?php 
+	}
+}
+endif;
 /********* Back-End Functions *********/
 
 if ( ! function_exists( 'progo_admin_menu_cleanup' ) ):
@@ -951,15 +1068,20 @@ if ( ! function_exists( 'progo_header_check' ) ):
  */
 function progo_header_check(){
 	if($_REQUEST['progo_action'] == 'step2') {
-		global $wpdb;
+		$formdata = $_REQUEST['collected_data'];
+		/*
 		// store form in progo_crm db table
-		$rows_affected = $wpdb->insert($wpdb->prefix . "progo_crm", array( 'id' => '', 'time' => current_time('mysql'), 'firstname' => $_REQUEST['firstname'], 'lastname' => $_REQUEST['lastname'], 'address' => $_REQUEST['address'], 'city' => $_REQUEST['city'], 'state' => $_REQUEST['state'], 'zip' => $_REQUEST['zip'], 'phone' => $_REQUEST['phone'], 'email' => $_REQUEST['email'], 'purchased' => 0 ));
+		global $wpdb;
+		$rows_affected = $wpdb->insert($wpdb->prefix . "progo_crm", array( 'id' => '', 'time' => current_time('mysql'), 'firstname' => $formdata[2], 'lastname' => $_REQUEST['lastname'], 'address' => $_REQUEST['address'], 'city' => $_REQUEST['city'], 'state' => $_REQUEST['state'], 'zip' => $_REQUEST['zip'], 'phone' => $_REQUEST['phone'], 'email' => $_REQUEST['email'], 'purchased' => 0 ));
+		*/
 		// and set wpsc...
-		$_SESSION['wpsc_checkout_saved_values'] = array('', '', $_REQUEST['firstname'], $_REQUEST['lastname'], $_REQUEST['address'], $_REQUEST['city'], '', array('US',$_REQUEST['state']), $_REQUEST['zip'], $_REQUEST['email'], '',$_REQUEST['s_firstname'],$_REQUEST['s_lastname'],$_REQUEST['s_address'],$_REQUEST['s_city'],$_REQUEST['state'],array('US'),$_REQUEST['s_zip'], $_REQUEST['phone']);
+		$_SESSION['wpsc_checkout_saved_values'] = $formdata;
+		/*
 		$_SESSION['wpsc_selected_country'] = 'US';
 		$_SESSION['wpsc_selected_region'] = $_REQUEST['state'];
 		$_SESSION['wpsc_delivery_country'] = 'US';
 		$_SESSION['wpsc_delivery_region'] = $_REQUEST['state'];
+		*/
 		header('Location: '. get_bloginfo('url') .'/products-page/checkout/');
 		die;
 	}
@@ -1929,6 +2051,7 @@ function progo_admin_bar_render() {
 	// add links to ProGo Direct Response pages
 	$wp_admin_bar->add_menu( array( 'parent' => 'new-content', 'id' => 'new_directresponse', 'title' => __('Direct Response Page'), 'href' => admin_url( 'admin.php?progo_admin_action=newdirect') ) );
 	$wp_admin_bar->add_menu( array( 'parent' => 'appearance', 'id' => 'progo_settings', 'title' => __('Site Settings'), 'href' => admin_url('admin.php?page=progo_site_settings') ) );
+	$wp_admin_bar->add_menu( array( 'parent' => 'appearance', 'id' => 'store_settings', 'title' => __('Store Settings'), 'href' => admin_url('admin.php?page=wpsc-settings') ) );
 	
 	$avail = progo_colorschemes();
 	if ( count($avail) > 0 ) {
@@ -1947,4 +2070,180 @@ function progo_admin_bar_render() {
 		
 		$wp_admin_bar->add_menu( array( 'parent' => 'edit', 'id' => 'edit_product', 'title' => __('Edit Product'), 'href' => admin_url( 'post.php?post='. $prod .'&action=edit') ) );
 	}
+}
+
+if(!function_exists('progo_change_tax') ) :
+/**
+ * overrides wpsc_change_tax so we can use state abbreviations instead of full names...
+ * @since Direct 1.0.59
+ */
+function progo_change_tax() {
+	global $wpdb, $wpsc_cart;
+
+	$form_id = absint( $_POST['form_id'] );
+
+	$wpsc_selected_country = $wpsc_cart->selected_country;
+	$wpsc_selected_region = $wpsc_cart->selected_region;
+
+	$wpsc_delivery_country = $wpsc_cart->delivery_country;
+	$wpsc_delivery_region = $wpsc_cart->delivery_region;
+
+
+	$previous_country = $_SESSION['wpsc_selected_country'];
+	if ( isset( $_POST['billing_country'] ) ) {
+		$wpsc_selected_country = $wpdb->escape( $_POST['billing_country'] );
+		$_SESSION['wpsc_selected_country'] = $wpsc_selected_country;
+	}
+
+	if ( isset( $_POST['billing_region'] ) ) {
+		$wpsc_selected_region = absint( $_POST['billing_region'] );
+		$_SESSION['wpsc_selected_region'] = $wpsc_selected_region;
+	}
+
+	$check_country_code = $wpdb->get_var( " SELECT `country`.`isocode` FROM `" . WPSC_TABLE_REGION_TAX . "` AS `region` INNER JOIN `" . WPSC_TABLE_CURRENCY_LIST . "` AS `country` ON `region`.`country_id` = `country`.`id` WHERE `region`.`id` = '" . $_SESSION['wpsc_selected_region'] . "' LIMIT 1" );
+
+	if ( $_SESSION['wpsc_selected_country'] != $check_country_code ) {
+		$wpsc_selected_region = null;
+	}
+
+	if ( isset( $_POST['shipping_country'] ) ) {
+		$wpsc_delivery_country = $wpdb->escape( $_POST['shipping_country'] );
+		$_SESSION['wpsc_delivery_country'] = $wpsc_delivery_country;
+	}
+	if ( isset( $_POST['shipping_region'] ) ) {
+		$wpsc_delivery_region = absint( $_POST['shipping_region'] );
+		$_SESSION['wpsc_delivery_region'] = $wpsc_delivery_region;
+	}
+
+	$check_country_code = $wpdb->get_var( " SELECT `country`.`isocode` FROM `" . WPSC_TABLE_REGION_TAX . "` AS `region` INNER JOIN `" . WPSC_TABLE_CURRENCY_LIST . "` AS `country` ON `region`.`country_id` = `country`.`id` WHERE `region`.`id` = '" . $wpsc_delivery_region . "' LIMIT 1" );
+
+	if ( $wpsc_delivery_country != $check_country_code ) {
+		$wpsc_delivery_region = null;
+	}
+
+
+	$wpsc_cart->update_location();
+	$wpsc_cart->get_shipping_method();
+	$wpsc_cart->get_shipping_option();
+	if ( $wpsc_cart->selected_shipping_method != '' ) {
+		$wpsc_cart->update_shipping( $wpsc_cart->selected_shipping_method, $wpsc_cart->selected_shipping_option );
+	}
+
+	$tax = $wpsc_cart->calculate_total_tax();
+	$total = wpsc_cart_total();
+	$total_input = wpsc_cart_total(false);
+	if($wpsc_cart->coupons_amount >= wpsc_cart_total() && !empty($wpsc_cart->coupons_amount)){
+		$total = 0;
+	}
+	if ( $wpsc_cart->total_price < 0 ) { 
+		$wpsc_cart->coupons_amount += $wpsc_cart->total_price; 
+		$wpsc_cart->total_price = null; 
+		$wpsc_cart->calculate_total_price(); 
+	} 
+	ob_start();
+
+	include_once( wpsc_get_template_file_path( 'wpsc-cart_widget.php' ) );
+	$output = ob_get_contents();
+
+	ob_end_clean();
+
+	$output = str_replace( Array( "\n", "\r" ), Array( "\\n", "\\r" ), addslashes( $output ) );
+	if ( get_option( 'lock_tax' ) == 1 ) {
+		echo "jQuery('#current_country').val('" . $_SESSION['wpsc_delivery_country'] . "'); \n";
+		if ( $_SESSION['wpsc_delivery_country'] == 'US' && get_option( 'lock_tax' ) == 1 ) {
+			$output = wpsc_shipping_region_list( $_SESSION['wpsc_delivery_country'], $_SESSION['wpsc_delivery_region'] );
+			$output = str_replace( Array( "\n", "\r" ), Array( "\\n", "\\r" ), addslashes( $output ) );
+			echo "jQuery('#region').remove();\n\r";
+			echo "jQuery('#change_country').append(\"" . $output . "\");\n\r";
+		}
+	}
+
+
+	foreach ( $wpsc_cart->cart_items as $key => $cart_item ) {
+		echo "jQuery('#shipping_$key').html(\"" . wpsc_currency_display( $cart_item->shipping ) . "\");\n\r";
+	}
+
+	echo "jQuery('#checkout_shipping').html(\"" . wpsc_cart_shipping() . "\");\n\r";
+
+	echo "jQuery('div.shopping-cart-wrapper').html('$output');\n";
+	if ( get_option( 'lock_tax' ) == 1 ) {
+		echo "jQuery('.shipping_country').val('" . $_SESSION['wpsc_delivery_country'] . "') \n";
+		$sql = "SELECT `country` FROM `" . WPSC_TABLE_CURRENCY_LIST . "` WHERE `isocode`='" . $_SESSION['wpsc_selected_country'] . "'";
+		$country_name = $wpdb->get_var( $sql );
+		echo "jQuery('.shipping_country_name').html('" . $country_name . "') \n";
+	}
+
+
+	$form_selected_country = null;
+	$form_selected_region = null;
+	$onchange_function = null;
+
+	if ( ($_POST['billing_country'] != 'undefined') && !isset( $_POST['shipping_country'] ) ) {
+		$form_selected_country = $wpsc_selected_country;
+		$form_selected_region = $wpsc_selected_region;
+		$onchange_function = 'progo_set_billing_country';
+	} else if ( ($_POST['shipping_country'] != 'undefined') && !isset( $_POST['billing_country'] ) ) {
+		$form_selected_country = $wpsc_delivery_country;
+		$form_selected_region = $wpsc_delivery_region;
+		$onchange_function = 'progo_set_billing_country';
+	}
+
+	if ( ($form_selected_country != null) && ($onchange_function != null) ) {
+		$region_list = $wpdb->get_results( "SELECT `" . WPSC_TABLE_REGION_TAX . "`.* FROM `" . WPSC_TABLE_REGION_TAX . "`, `" . WPSC_TABLE_CURRENCY_LIST . "`  WHERE `" . WPSC_TABLE_CURRENCY_LIST . "`.`isocode` IN('" . $form_selected_country . "') AND `" . WPSC_TABLE_CURRENCY_LIST . "`.`id` = `" . WPSC_TABLE_REGION_TAX . "`.`country_id`", ARRAY_A );
+		if ( $region_list != null ) {
+			$title = (empty($_POST['billing_country']))?'shippingstate':'billingstate';
+			$output = "<select name='collected_data[" . $form_id . "][1]' class='current_region' onchange='$onchange_function(\"region_country_form_$form_id\", \"$form_id\");' title='" . $title . "'>\n\r";
+
+			foreach ( $region_list as $region ) {
+				if ( $form_selected_region == $region['id'] ) {
+					$selected = "selected='selected'";
+				} else {
+					$selected = "";
+				}
+				$output .= "   <option value='" . $region['id'] . "' $selected>" . htmlspecialchars( $region['code'] ) . "</option>\n\r";
+			}
+			$output .= "</select>\n\r";
+
+			$output = str_replace( Array( "\n", "\r" ), Array( "\\n", "\\r" ), addslashes( $output ) );
+			echo "jQuery('#region_select_$form_id').html(\"" . $output . "\");\n\r";
+			echo "
+				var wpsc_checkout_table_selector = jQuery('#region_select_$form_id').parents('.wpsc_checkout_table').attr('class');
+				wpsc_checkout_table_selector = wpsc_checkout_table_selector.replace(' ','.');
+				wpsc_checkout_table_selector = '.'+wpsc_checkout_table_selector;
+				jQuery(wpsc_checkout_table_selector + ' input.billing_region').attr('disabled', 'disabled');
+				jQuery(wpsc_checkout_table_selector + ' input.shipping_region').attr('disabled', 'disabled');
+			";/*
+				jQuery(wpsc_checkout_table_selector + ' .billing_region').parent().parent().hide();
+				jQuery(wpsc_checkout_table_selector + ' .shipping_region').parent().parent().hide();*/
+		} else {
+			if ( get_option( 'lock_tax' ) == 1 ) {
+				echo "jQuery('#region').hide();";
+			}
+			echo "jQuery('#region_select_$form_id').html('');\n\r";
+			echo "
+				var wpsc_checkout_table_selector = jQuery('#region_select_$form_id').parents('.wpsc_checkout_table').attr('class');
+				wpsc_checkout_table_selector = wpsc_checkout_table_selector.replace(' ','.');
+				wpsc_checkout_table_selector = '.'+wpsc_checkout_table_selector;
+				jQuery(wpsc_checkout_table_selector + ' input.billing_region').removeAttr('disabled');
+				jQuery(wpsc_checkout_table_selector + ' input.shipping_region').removeAttr('disabled');
+				jQuery(wpsc_checkout_table_selector + ' .billing_region').parent().parent().show();
+				jQuery(wpsc_checkout_table_selector + ' .shipping_region').parent().parent().show();
+			";
+		}
+	}
+	if ( $tax > 0 ) {
+		echo "jQuery(\"tr.total_tax\").show();\n\r";
+	} else {
+		echo "jQuery(\"tr.total_tax\").hide();\n\r";
+	}
+	echo "jQuery('#checkout_tax').html(\"<span class='pricedisplay'>" . wpsc_cart_tax() . "</span>\");\n\r";
+	echo "jQuery('#checkout_total').html(\"{$total}<input id='shopping_cart_total_price' type='hidden' value='{$total_input}' />\");\n\r";
+	echo "if(jQuery(\"#shippingSameBilling\").is(\":checked\")) wpsc_shipping_same_as_billing();";
+	exit();
+}
+endif;
+// execute on POST and GET
+if ( isset( $_REQUEST['wpsc_ajax_action'] ) && ($_REQUEST['wpsc_ajax_action'] == 'change_tax') ) {
+	remove_action( 'init', 'wpsc_change_tax' );
+	add_action( 'init', 'progo_change_tax' );
 }

@@ -201,7 +201,9 @@ $options = get_option('progo_options');
             <div class="grid_4 omega" id="side">
    <?php do_action('wpsc_before_form_of_shopping_cart'); ?>         
    <form class="pform" action='' method='post' enctype="multipart/form-data">
-    <h3>Payment Information<br />Secure Transaction</h3>
+            <table width="96%" cellpadding="0" cellspacing="0" height="455" class="wpsc_checkout_table">
+            <tr><td valign="top" height="56"><h3>Payment Information<br />Secure Transaction</h3></td></tr>
+            <tr><td>
       <?php
       /**
        * Both the registration forms and the checkout details forms must be in the same form element as they are submitted together, you cannot have two form elements submit together without the use of JavaScript.
@@ -214,84 +216,14 @@ $options = get_option('progo_options');
                <p class='validation-error'><?php echo $user_error; ?></p>
                <?php } ?>
          </div>
+         </td></tr><tr><td>
       <?php
       endif;
        $_SESSION['wpsc_checkout_misc_error_messages'] = array(); ?>
-<fieldset id="billing" style="display:none">
-      <?php $i = 0;
+      <?php 
 	  global $wpsc_checkout;
-	  //echo '<pre style="display:none">'. print_r($wpsc_checkout->checkout_items, true) .'</pre>';
-      while (wpsc_have_checkout_items()) : wpsc_the_checkout_item(); ?>
-
-        <?php if(wpsc_checkout_form_is_header() == true){
-               $i++;
-               //display headers for form fields ?>
-               <?php if($i > 1):?>
-                  </fieldset><fieldset id="shipping" style="display:none">
-               <?php endif; ?>
-                     <div class="inf"><?php echo wpsc_checkout_form_name();?></div>
-               <?php if(wpsc_is_shipping_details()):?>
-               <div>
-                  <input type='checkbox' value='true' name='shippingSameBilling' id='shippingSameBilling' />
-                     <label for='billing_same_as_shipping'><?php _e('Shipping address the same as Billing address?','wpsc'); ?></label>
-                     </div>
-               <?php endif;
-
-            // Not a header so start display form fields
-			/*
-            }elseif(wpsc_disregard_shipping_state_fields()){
-            ?><label for='<?php echo wpsc_checkout_form_element_id(); ?>'>
-                     <?php echo wpsc_checkout_form_name();?>
-                     </label>
-                     <?php echo wpsc_checkout_form_field();?>
-                      <?php if(wpsc_the_checkout_item_error() != ''): ?>
-                             <p class='validation-error'><?php echo wpsc_the_checkout_item_error(); ?></p>
-                     <?php endif; ?>
-            <?php
-            }elseif(wpsc_disregard_billing_state_fields()){
-            ?><label for='<?php echo wpsc_checkout_form_element_id(); ?>'>
-                     <?php echo wpsc_checkout_form_name();?>
-                     </label>
-                     <?php echo wpsc_checkout_form_field();?>
-                      <?php if(wpsc_the_checkout_item_error() != ''): ?>
-                             <p class='validation-error'><?php echo wpsc_the_checkout_item_error(); ?></p>
-                     <?php endif; ?>
-            <?php
-            */
-			}elseif( $wpsc_checkout->checkout_item->unique_name == 'billingemail'){ ?>
-               <div class='wpsc_email_address'>
-                     <label class='wpsc_email_address' for='<?php echo wpsc_checkout_form_element_id(); ?>'>
-                     <?php _e('Email'); ?>
-                     </label>
-                  <?php echo wpsc_checkout_form_field();?>
-                   <?php if(wpsc_the_checkout_item_error() != ''): ?>
-                      <p class='validation-error'><?php echo wpsc_the_checkout_item_error(); ?></p>
-                  <?php endif; ?>
-               </div>   <?php
-             }else{
-				 if( $wpsc_checkout->checkout_item->unique_name == 'billingpostcode' ) {
-					 echo '<span class="zip"><label for="'. wpsc_checkout_form_element_id() .'">Zip</label>';
-				 } elseif( $wpsc_checkout->checkout_item->unique_name == 'billingcountry' ) {
-				 ?>
-                  <label for='<?php echo wpsc_checkout_form_element_id(); ?>' style="display:none">
-                  <?php echo wpsc_checkout_form_name();?>
-                  </label>
-                  <?php } else {
-				 ?>
-                  <label for='<?php echo wpsc_checkout_form_element_id(); ?>'>
-                  <?php echo wpsc_checkout_form_name();?>
-                  </label>
-                  <?php } ?>
-                  <?php echo wpsc_checkout_form_field(); ?>
-                   <?php if(wpsc_the_checkout_item_error() != ''): ?>
-                          <p class='validation-error'><?php echo wpsc_the_checkout_item_error(); ?></p>
-                  <?php endif; ?>
-
-         <?php
-         		if( $wpsc_checkout->checkout_item->unique_name == 'billingpostcode' ) echo '</span>';
-		 }//endif; ?>
-
-      <?php endwhile; ?>
+	  progo_direct_form_fields( true, true );
+	   ?>
 
       <?php if (wpsc_show_find_us()) : ?><label for='how_find_us'><?php _e('How did you find us' , 'wpsc'); ?></label><select name='how_find_us'>
                <option value='Word of Mouth'><?php _e('Word of mouth' , 'wpsc'); ?></option>
@@ -301,7 +233,6 @@ $options = get_option('progo_options');
             </select>
       <?php endif; ?>
       <?php do_action('wpsc_inside_shopping_cart'); ?>
-</fieldset>
 <fieldset id="payment">
 <table><tr><td>
       <?php  //this HTML displays activated payment gateways   ?>
@@ -357,7 +288,9 @@ echo '<br />';
 <label><input type="checkbox" name="editshipping" /> Add/Edit my Shipping Info</label>
 <?php } ?>
 </div>
-<div id="cred"><?php echo $options['credentials']; ?></div>	
+</td></tr>
+<tr><td align="center" valign="top"><?php echo $options['credentials']; ?></td></tr>
+            <tr><td height="63">
 <!-- div for make purchase button -->
       <div class='wpsc_make_purchase'>
          <span>
@@ -368,7 +301,7 @@ echo '<br />';
                <input type='submit' value='<?php echo $options['button']; ?>' name='submit' class='make_purchase wpsc_buy_button sbtn buynow' />
          </span>
       </div>
-
+</td></tr></table>
 </form>
 <script type="text/javascript">
 jQuery(function($) {

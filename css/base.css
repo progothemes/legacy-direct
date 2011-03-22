@@ -68,7 +68,7 @@ sup { bottom: 1ex;}
 sub { top: .5ex;}
 input[type="text"], input.text, textarea { background: #fff; border: 1px solid #ccc; box-shadow: inset 1px 1px 1px rgba(0,0,0,0.1); -moz-box-shadow: inset 1px 1px 1px rgba(0,0,0,0.1); -webkit-box-shadow: inset 1px 1px 1px rgba(0,0,0,0.1); padding: 2px;}
 input.text, textarea { width: 163px; }
-span.shipping_region_name, span.shipping_country_name { background: #fff; border: 1px solid #ccc; box-shadow: inset 1px 1px 1px rgba(0,0,0,0.1); -moz-box-shadow: inset 1px 1px 1px rgba(0,0,0,0.1); -webkit-box-shadow: inset 1px 1px 1px rgba(0,0,0,0.1); padding: 2px; float: left; height: 17px; margin-bottom: 10px; width: 163px; font-weight: normal; cursor: default}
+span.shipping_region_name, span.shipping_country_name { background: #fff; border: 1px solid #ccc; box-shadow: inset 1px 1px 1px rgba(0,0,0,0.1); -moz-box-shadow: inset 1px 1px 1px rgba(0,0,0,0.1); -webkit-box-shadow: inset 1px 1px 1px rgba(0,0,0,0.1); padding: 2px; float: left; height: 17px; margin-bottom: 10px; width: 163px; font-weight: normal; cursor: default; color: #666 }
 .zip input.text {width:58px;}
 input.text.need { border-color: #f00; }
 a { color: #0066cc; text-decoration: none }
@@ -166,23 +166,25 @@ body.page .edit-link { clear: both; display: block;}
 
 /* Main sidebars */
 .pform { float: left; width: 100%; padding: 30px 0 13px 16px; background:url(../images/LightGrey/form.png) repeat-y 50% -87px; margin: 0 0 0 -6px;}
-.pform h3 { float: left; width: 305px; height:56px; font-size: 21px; line-height:28px; color:#333; text-align: center; position: relative; margin: -2px 0 0 }
-.pform fieldset { float: left; width: 282px; margin: 22px 0 0 23px;  font-weight: bold; color: #333 }
+.pform h3 { display:block; font-size: 21px; line-height:28px; color:#333; text-align: center; position: relative; margin: -2px 0 0 }
+.pform fieldset { display:block; position:relative; left: 23px;  font-weight: bold; color: #333 }
 .pform fieldset .inf { display: block; padding: 0 0 8px 85px; }
 .pform fieldset.check { margin-bottom: 30px; }
 .pform fieldset label { float: left; width: 85px; }
+.pform table.wpsc_checkout_table fieldset label { padding: 0; }
 .pform fieldset .zip label { width: 29px; margin-left:22px }
 .pform fieldset input, .pform fieldset select { float: left; height: 17px; margin-bottom: 10px }
 .pform fieldset.check input, .pform fieldset.check select { float: none }
-.pform fieldset select { height: 20px; width: 54px; }
-.pform fieldset select.wpsc_ccBox { width: 170px !important }
-.pform fieldset select.wpsc_ccBox.exp { width: 82px !important; margin-right: 5px }
+.pform fieldset select { height: 20px; width: 167px; }
+.pform fieldset select.wpsc_ccBox { width: auto; margin-right: 5px }
+/*
 #cred { float: left; text-align: center; width: 305px; height:49px; }
 #cred.noship { margin-top: 36px }
-.pform input.sbtn { float:left; margin: 10px 26px 0; width: 252px; cursor:pointer }
-.pform input.sbtn.buynow { margin-top: 0; height: 63px; border: none; text-align: center; background: url(../images/LightGrey/btn.png) no-repeat 0 0; font: bold 27px/29px Arial, Helvetica, sans-serif; color: #fff; cursor:pointer }
+*/
+.pform input.sbtn { display:block; margin: 0 auto; width: 252px; cursor:pointer }
+.pform input.sbtn.buynow { height: 63px; border: none; text-align: center; background: url(../images/LightGrey/btn.png) no-repeat 0 0; font: bold 27px/29px Arial, Helvetica, sans-serif; color: #fff; cursor:pointer }
 fieldset.check td { vertical-align:middle; }
-label.cb { float:left; margin: 0 0 15px 19px; font-weight: bold; }
+label.cb { float:left; margin: 0 0 0 19px; font-weight: bold; }
 
 #secondary { float: left; width: 100%; margin-top: 35px; }
 .block { float: left; width: 97%; border: 1px solid #ccc; margin: 0 0 16px }
@@ -199,7 +201,7 @@ label.cb { float:left; margin: 0 0 15px 19px; font-weight: bold; }
 .block.share a { float: left; width: 30px; height: 30px; margin-right: 10px; }
 .block.share a.twitter { background: url(../images/share.gif) no-repeat -30px 0; text-indent:-999em }
 .block.share .st_sharethis_custom, .block.share .st_sharethis { float: left; width: 30px; height: 30px; margin-right: 10px; background: url(../images/share.gif) no-repeat -60px 0; cursor: pointer }
-.block.share .st_sharethis .chicklets, select.current_country, input.billing_region.text { display: none }
+.block.share .st_sharethis .chicklets /*, select.current_country, input.billing_region.text*/ { display: none }
 
 /* footer */
 #ftr { float: left; padding: 12px 6px 32px; background:url(../images/shade.png) no-repeat 0 0; }
