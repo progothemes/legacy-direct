@@ -41,12 +41,17 @@ class ProGo_Widget_EasySecure extends WP_Widget {
 			echo $before_title . $title . $after_title;
 			
 		$options = get_option('progo_options');
-		?>
-<img src="<?php bloginfo('template_url'); ?>/images/weaccept.gif" alt="We Accept..." />
- <span class="support">Customer Support: <?php if($options['support_email']) {
-     echo '<a href="mailto:'. esc_attr($options['support']) .'">email us</a>';
- } else echo esc_html($options['support']); ?></span>
-		<?php
+		
+		$oot = '<img src="'. get_bloginfo('template_url') .'/images/weaccept.gif" alt="We Accept..." />';
+		$oot .= '<span class="support">Customer Support: ';
+		if($options['support_email']) {
+			$oot .= '<a href="mailto:'. esc_attr($options['support']) .'">email us</a>';
+		} else {
+			$oot .= esc_html($options['support']);
+		}
+		$oot .= '</span>';
+		$oot = apply_filters('progo_display_easysecure', $oot, $args, $instance);
+		echo $oot;
 		echo $after_widget;
 	}
 
