@@ -33,7 +33,7 @@ if($post->post_parent > 0) {
 <div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 <h1 class="page-title"><?php
 if($post->post_name == 'checkout') {
-	esc_html_e($options[checkout]);
+	echo wp_kses($options[checkout], array('em'=>array(), 'strong'=>array()));
 } else {
 	the_title();
 }

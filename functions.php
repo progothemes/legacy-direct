@@ -1364,10 +1364,13 @@ if ( ! function_exists( 'progo_options_validate' ) ):
  */
 function progo_options_validate( $input ) {
 	// do validation here...
-	$arr = array( 'blogname', 'blogdescription', 'colorscheme', 'support', 'copyright', 'checkout', 'button', 'apikey', 'companyinfo' );
+	$arr = array( 'blogname', 'blogdescription', 'colorscheme', 'support', 'copyright', 'button', 'apikey', 'companyinfo' );
 	foreach ( $arr as $opt ) {
 		$input[$opt] = wp_kses( $input[$opt], array() );
 	}
+	// we'll let CHECKOUT headline have some html in it...
+	$input['checkout'] = wp_kses( $input['checkout'], array('strong'=>array(), 'em'=>array()) );
+	
 	// opt[colorscheme] must be one of the allowed colors
 	$colors = progo_colorschemes();
 	if ( !in_array( $input['colorscheme'], $colors ) ) {
@@ -1740,7 +1743,7 @@ if ( ! function_exists( 'progo_field_checkout' ) ):
 function progo_field_checkout() {
 	$options = get_option( 'progo_options' );
 	?>
-<input id="progo_checkout" name="progo_options[checkout]" value="<?php esc_html_e( $options['checkout'] ); ?>" class="regular-text" type="text" />
+<input id="progo_checkout" name="progo_options[checkout]" value="<?php echo esc_attr( $options['checkout'] ); ?>" class="regular-text" type="text" />
 <span class="description">Headline at the top of the <a href="../products-page/checkout/">Checkout</a> page</span>
 <?php }
 endif;

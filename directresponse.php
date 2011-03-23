@@ -10,7 +10,7 @@
  */
 get_header(); 
 $options = get_option('progo_options'); ?>
-    <div id="container" class="container_12">
+    <div id="container" class="container_12 direct">
         <div id="main" role="main" class="grid_8">
 <?php if ( have_posts() ) while ( have_posts() ) : the_post();
 
@@ -63,7 +63,7 @@ if ( $direct[plink] != 0 ) {
 <?php endwhile; ?>
 			</div><!-- #main -->
             <div class="grid_4 omega" id="side">
-            <form class="pform" enctype="multipart/form-data" action="<?php echo ($direct[plink]>0 ? get_permalink($post->ID) .'?progo_action=step2' : '" onsubmit="return false;"'); ?>" method="post" name="product_<?php echo absint($direct[plink]); ?>" id="product_<?php echo absint($direct[plink]); ?>">
+            <form class="pform direct" enctype="multipart/form-data" action="<?php echo ($direct[plink]>0 ? get_permalink($post->ID) .'?progo_action=step2' : '" onsubmit="return false;"'); ?>" method="post" name="product_<?php echo absint($direct[plink]); ?>" id="product_<?php echo absint($direct[plink]); ?>">
             <table width="96%" cellpadding="0" cellspacing="0" class="wpsc_checkout_table">
             <tr><td valign="top" height="56"><h3 id="rh"><?php echo nl2br(esc_html($direct[rightheadline])); ?></h3></td></tr>
             <tr><td><input type="hidden" name="wpsc_ajax_action" value="add_to_cart" />

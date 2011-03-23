@@ -202,7 +202,7 @@ $options = get_option('progo_options');
    <?php do_action('wpsc_before_form_of_shopping_cart'); ?>         
    <form class="pform" action='' method='post' enctype="multipart/form-data">
             <table width="96%" cellpadding="0" cellspacing="0" height="455" class="wpsc_checkout_table">
-            <tr><td valign="top" height="56"><h3>Payment Information<br />Secure Transaction</h3></td></tr>
+            <tr class="hdr"><td><h3>Payment Information<br />Secure Transaction</h3></td></tr>
             <tr><td>
       <?php
       /**
@@ -235,12 +235,14 @@ $options = get_option('progo_options');
       <?php do_action('wpsc_inside_shopping_cart'); ?>
 <fieldset id="payment">
 <table><tr><td>
-      <?php  //this HTML displays activated payment gateways   ?>
-      <?php if(wpsc_gateway_count() > 1): // if we have more than one gateway enabled, offer the user a choice ?>
+      <?php  //this HTML displays activated payment gateways
+	  do_action('progo_pre_gateways');
+	  if(wpsc_gateway_count() > 1): // if we have more than one gateway enabled, offer the user a choice ?>
          <tr>
          <td colspan='2' class='wpsc_gateway_container'>
             <h3><?php _e('Payment Type', 'wpsc');?></h3>
-            <?php while (wpsc_have_gateways()) : wpsc_the_gateway(); ?>
+            <?php
+			while (wpsc_have_gateways()) : wpsc_the_gateway(); ?>
                <div class="custom_gateway">
                      <label><input type="radio" value="<?php echo wpsc_gateway_internal_name();?>" <?php echo wpsc_gateway_is_checked(); ?> name="custom_gateway" class="custom_gateway"/><?php echo wpsc_gateway_name(); ?> 
                      	<?php if( wpsc_show_gateway_image() ): ?>
@@ -298,7 +300,7 @@ echo '<br />';
                <input type='hidden' value='yes' name='agree' />
             <?php endif; ?>
                <input type='hidden' value='submit_checkout' name='wpsc_action' />
-               <input type='submit' value='<?php echo $options['button']; ?>' name='submit' class='make_purchase wpsc_buy_button sbtn buynow' />
+               <?php echo apply_filters('progo_checkout_btn', "<input type='submit' value='$options[button]' name='submit' class='make_purchase wpsc_buy_button sbtn buynow' />"); ?>
          </span>
       </div>
 </td></tr></table>
