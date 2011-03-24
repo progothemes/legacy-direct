@@ -23,6 +23,7 @@ $options = get_option('progo_options');
         <td width="85">Quantity</td>
         <td width="80" class="rz">Price</td>
    </tr>
+   <?php if(function_exists('easyupsell_products')) easyupsell_products(); ?>
    <?php while (wpsc_have_cart_items()) : wpsc_the_cart_item(); ?>
       <?php  //this displays the confirm your order html ?>
       <tr class="product_row">

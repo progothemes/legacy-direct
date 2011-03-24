@@ -536,6 +536,7 @@ div.frontpage_product span.front_page_price{
 	vertical-align:top;
 	padding: 16px 15px 10px;
 }
+#main table tr td .upselldesc { font-size: 14px; line-height:17px }
 
 body.wpsc-transaction-details #main table { margin: 0 -20px; width: 908px }
 body.wpsc-transaction-details #main table tr td { font-size: 13px; }
