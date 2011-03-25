@@ -173,8 +173,8 @@
 								$product_list .= "\n\r " . $single_link["name"] . ": " . $single_link["url"] . "\n\r";
 								$product_list_html .= "<a href='" . $single_link["url"] . "'>" . $single_link["name"] . "</a>\n";
 							}
-							$product_list .= "$additional_content</td><td>$message_price</td><td>$total</td></tr>";
-							$product_list_html .= "$additional_content</td><td>$message_price</td><td>$total</td></tr>";
+							$product_list .= "$additional_content</td><td>$message_price</td><td>$message_price</td></tr>";
+							$product_list_html .= "$additional_content</td><td>$message_price</td><td>$message_price</td></tr>";
 						} else {
 						
 							$product_list.= "<tr class=\"product_row\"><td>$row[quantity]</td><td>$row[name]<br />$additional_content</td><td>$message_price</td><td>$total</td></tr>";

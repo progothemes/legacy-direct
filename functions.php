@@ -68,6 +68,7 @@ function progo_setup() {
 	add_filter( 'favorite_actions', 'progo_favorite_actions' );
 	add_filter( 'admin_post_thumbnail_html', 'progo_admin_post_thumbnail_html' );
 	add_filter( 'wpsc_pre_transaction_results', 'progo_prepare_transaction_results' );
+	add_filter( 'wp_mail_content_type', 'progo_mail_content_type' );
 	
 	if ( !is_admin() ) {
 		// brick it if not activated
@@ -2250,3 +2251,8 @@ if ( isset( $_REQUEST['wpsc_ajax_action'] ) && ($_REQUEST['wpsc_ajax_action'] ==
 	remove_action( 'init', 'wpsc_change_tax' );
 	add_action( 'init', 'progo_change_tax' );
 }
+if(!function_exists('progo_mail_content_type')):
+function progo_mail_content_type( $content_type ) {
+	return 'text/html';
+}
+endif;
