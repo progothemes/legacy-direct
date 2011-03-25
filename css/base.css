@@ -209,8 +209,11 @@ label.cb { float:left; margin: 0 0 0 19px; font-weight: bold; }
 /* footer */
 #ftr { float: left; padding: 12px 6px 32px; background:url(../images/shade.png) no-repeat 0 0; }
 #ftr, #ftr a { color: #333; }
-#ftr ul { float: left; margin: 0 0 0 15px; padding: 0; list-style: none; }
+#ftr ul { float: left; margin: 0; padding: 0; list-style: none; }
 #ftr ul li { float: left; margin: 0; padding: 0; list-style: none; }
+#ftr .grid_8 { position: relative; left: 15px; }
+#ftr .right { text-align: right; margin-top: 5px }
+#ftr .right img { float: right; margin: -5px 7px 0 5px }
 
 /* other */
 *:focus {
