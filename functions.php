@@ -203,7 +203,7 @@ if ( ! function_exists( 'progo_direct_form_fields' ) ):
  * @since Direct 1.0.59
  */
 function progo_direct_form_fields( $includeshipping = true, $hideboth = false ) {
-	if ( ! function_exists('wpsc_checkout') ) {
+	if ( ! function_exists('wpsc_have_checkout_items') ) {
 		if( current_user_can( 'activate_plugins' ) ) {
 			echo '<h3>Please Install/Activate the WP E-Commerce Plugin</h3><br /><br /><a href="'. get_bloginfo('url') .'/wp-admin/plugins.php" class="sbtn buynow">Manage Plugins</a>';
 		}
