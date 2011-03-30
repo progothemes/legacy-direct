@@ -84,6 +84,26 @@ function progo_set_billing_country(html_form_id, form_id){
 	});
 }
 
+function progo_selectcheck( id, disabled ) {
+	var wpsc_checkout_table = jQuery('#region_select_'+ id).parents('.wpsc_checkout_table');
+	
+	if(disabled == true ) {
+		wpsc_checkout_table.find('input.billing_region').attr('disabled', 'disabled');
+		wpsc_checkout_table.find('input.shipping_region').attr('disabled', 'disabled');
+		wpsc_checkout_table.find('.billing_region').parent().hide();
+		wpsc_checkout_table.find('.shipping_region').parent().hide();
+	} else {
+		wpsc_checkout_table.find('input.billing_region').removeAttr('disabled');
+		wpsc_checkout_table.find('input.shipping_region').removeAttr('disabled');
+		wpsc_checkout_table.find('.billing_region').parent().show();
+		wpsc_checkout_table.find('.shipping_region').parent().show();
+	}
+	var countrysel = jQuery('#wpsc_checkout_form_'+id);
+	if( countrysel.children().size() < 2 ) {
+		countrysel.hide().parent().prev().prev().hide();
+	}
+}
+
 jQuery(function($) {
 	$('#edit').change(function() {
 		$('#billing,#shipping').toggle();
@@ -91,7 +111,6 @@ jQuery(function($) {
 	$('form.pform input.req').bind('blur.progo',checkThisField);
 	$('form.pform select.req').bind('change.progo',checkThisField);
 	$('form.pform').bind('submit',checkReq);
-	
 	$('.pform .current_country').trigger('change');
 	
 	var editchx = $('#side .editchecks input:checkbox');
@@ -106,9 +125,4 @@ jQuery(function($) {
 			$(this).parent().siblings('label').children('input:checkbox').attr('checked',false);
 		});
 	}
-	$('select.current_country').each(function() {
-		if($(this).children().size() == 1) {
-			$(this).hide().parent().parent().prev().hide();
-		}
-	});
 });

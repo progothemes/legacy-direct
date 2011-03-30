@@ -177,6 +177,7 @@ body.page .edit-link { clear: both; display: block;}
 .pform fieldset input, .pform fieldset select { float: left; height: 17px; margin-bottom: 10px }
 .pform fieldset.check input, .pform fieldset.check select { float: none }
 .pform fieldset select { height: 20px; width: 167px; }
+.pform fieldset select.current_region { width: 54px; }
 .pform fieldset select.wpsc_ccBox { width: auto; margin-right: 5px }
 td.cred { vertical-align: top; text-align:center; }
 .pform tr.hdr td { height: 56px; vertical-align:text-bottom; }

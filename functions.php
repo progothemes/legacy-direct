@@ -228,6 +228,7 @@ function progo_direct_form_fields( $includeshipping = true, $hideboth = false ) 
 		}
 	
 		$shortenzip = false;
+		echo '<pre style="display:none">'. print_r($wpsc_checkout, true) .'</pre>';
 	foreach( $fieldset as $i => $item ) {
 		if ( $item->type == 'address' ) $item->type = 'text';
 		$wpsc_checkout->checkout_item = $item;
@@ -252,7 +253,7 @@ function progo_direct_form_fields( $includeshipping = true, $hideboth = false ) 
 		
 		$fieldcode = wpsc_checkout_form_field();
 		
-		if ( $item->type == 'country' ) {
+		if ( in_array($item->type, array( 'country', 'delivery_country' ) ) ) {
 			// add extra STATE label
 			$lookfor = "<div id='region_select_".$item->id."'><select";
 			$statestart = strpos($fieldcode, $lookfor);
@@ -281,8 +282,10 @@ function progo_direct_form_fields( $includeshipping = true, $hideboth = false ) 
 					$statescode = str_replace("value='$selected_region'", "value='$selected_region' selected='selecte'", $statescode);
 				}
 				
-				if(strpos($fieldset[$i+1]->unique_name, 'postcode') > 0) $shortenzip = true;
-				
+				if(strpos($fieldset[$i+1]->unique_name, 'postcode') > 0) {
+					$shortenzip = true;
+					echo '<!-- shorterzipcoming -->';
+				}
 				$fieldcode = substr($fieldcode, 0, $statestart) ."<label class='statelabel label". $item->id ."'>State <span class='asterix'>*</span></label><div id='region_select_".$item->id."'><select". ($shortenzip ? " style='width:54px'" : ""). $statescode;
 				$fieldcode = str_replace('set_shipping_country', 'progo_set_shipping_country', $fieldcode);
 				$fieldcode = str_replace('set_billing_country', 'progo_set_billing_country', $fieldcode);
@@ -2211,27 +2214,15 @@ function progo_change_tax() {
 			$output = str_replace( Array( "\n", "\r" ), Array( "\\n", "\\r" ), addslashes( $output ) );
 			echo "jQuery('#region_select_$form_id').html(\"" . $output . "\");\n\r";
 			echo "
-				var wpsc_checkout_table_selector = jQuery('#region_select_$form_id').parents('.wpsc_checkout_table').attr('class');
-				wpsc_checkout_table_selector = wpsc_checkout_table_selector.replace(' ','.');
-				wpsc_checkout_table_selector = '.'+wpsc_checkout_table_selector;
-				jQuery(wpsc_checkout_table_selector + ' input.billing_region').attr('disabled', 'disabled');
-				jQuery(wpsc_checkout_table_selector + ' input.shipping_region').attr('disabled', 'disabled');
-			";/*
-				jQuery(wpsc_checkout_table_selector + ' .billing_region').parent().parent().hide();
-				jQuery(wpsc_checkout_table_selector + ' .shipping_region').parent().parent().hide();*/
+				progo_selectcheck('$form_id', true);
+			";
 		} else {
 			if ( get_option( 'lock_tax' ) == 1 ) {
 				echo "jQuery('#region').hide();";
 			}
 			echo "jQuery('#region_select_$form_id').html('');\n\r";
 			echo "
-				var wpsc_checkout_table_selector = jQuery('#region_select_$form_id').parents('.wpsc_checkout_table').attr('class');
-				wpsc_checkout_table_selector = wpsc_checkout_table_selector.replace(' ','.');
-				wpsc_checkout_table_selector = '.'+wpsc_checkout_table_selector;
-				jQuery(wpsc_checkout_table_selector + ' input.billing_region').removeAttr('disabled');
-				jQuery(wpsc_checkout_table_selector + ' input.shipping_region').removeAttr('disabled');
-				jQuery(wpsc_checkout_table_selector + ' .billing_region').parent().parent().show();
-				jQuery(wpsc_checkout_table_selector + ' .shipping_region').parent().parent().show();
+				progo_selectcheck('$form_id', false);
 			";
 		}
 	}
