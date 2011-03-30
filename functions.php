@@ -1086,7 +1086,10 @@ function progo_header_check(){
 		$_SESSION['wpsc_delivery_country'] = 'US';
 		$_SESSION['wpsc_delivery_region'] = $_REQUEST['state'];
 		*/
-		header('Location: '. get_bloginfo('url') .'/products-page/checkout/');
+    	global $wpdb;
+   		$checkoutid = $wpdb->get_var("SELECT ID FROM $wpdb->posts WHERE post_name = 'checkout' AND post_status = 'publish' AND post_type = 'page'");
+		$checkouturl = get_permalink($checkoutid);
+		header('Location: '. $checkouturl);
 		die;
 	}
 }
