@@ -72,7 +72,7 @@ if ( $direct[plink] != 0 ) {
             $includeshipping = true;
 			if( ( absint( get_option( 'do_not_use_shipping' ) ) == 1 ) || ( $direct[productmeta][no_shipping] == 1 ) ) $includeshipping = false;
 			progo_direct_form_fields( $includeshipping );
-			if ( $includeshipping ) {
+			if ( $includeshipping && function_exists('wpsc_checkout') ) {
 				echo '<label class="cb"><input type="checkbox" id="edit" name="edit" /> Add different Shipping Address</label>';
 			} ?>
             </td></tr>

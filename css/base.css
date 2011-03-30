@@ -185,8 +185,9 @@ td.cred { vertical-align: top; text-align:center; }
 #cred { float: left; text-align: center; width: 305px; height:49px; }
 #cred.noship { margin-top: 36px }
 */
-.pform input.sbtn { display:block; margin: 0 auto; width: 252px; cursor:pointer }
-.pform input.sbtn.buynow { height: 63px; border: none; text-align: center; background: url(../images/LightGrey/btn.png) no-repeat 0 0; font: bold 27px/29px Arial, Helvetica, sans-serif; color: #fff; cursor:pointer }
+.pform input.sbtn, .pform a.sbtn { display:block; margin: 0 auto; width: 252px; cursor:pointer }
+.pform input.sbtn.buynow, .pform a.sbtn.buynow { height: 63px; border: none; text-align: center; background: url(../images/LightGrey/btn.png) no-repeat 0 0; font: bold 27px/29px Arial, Helvetica, sans-serif; color: #fff; cursor:pointer }
+.pform a.sbtn.buynow { height: 46px; padding-top: 17px; }
 fieldset.check td { vertical-align:middle; }
 label.cb { float:left; margin: 0 0 0 19px; font-weight: bold; }
 

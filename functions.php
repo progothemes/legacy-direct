@@ -109,7 +109,7 @@ if ( ! function_exists( 'progo_direct_submitbtn' ) ):
  * @since Direct 1.0.45
  */
 function progo_direct_submitbtn( $pid=0, $btxt = 'BUY NOW' ) {
-	return '<input type="submit" id="product_'. absint($pid) .'_submit_button" name="Buy" value="'. esc_html($btxt) .'" class="buynow sbtn" />';
+	return function_exists('wpsc_checkout') ? '<input type="submit" id="product_'. absint($pid) .'_submit_button" name="Buy" value="'. esc_html($btxt) .'" class="buynow sbtn" />' : '';
 }
 endif;
 if ( ! function_exists( 'progo_posted_on' ) ):
@@ -203,6 +203,13 @@ if ( ! function_exists( 'progo_direct_form_fields' ) ):
  * @since Direct 1.0.59
  */
 function progo_direct_form_fields( $includeshipping = true, $hideboth = false ) {
+	if ( ! function_exists('wpsc_checkout') ) {
+		if( current_user_can( 'activate_plugins' ) ) {
+			echo '<h3>Please Install/Activate the WP E-Commerce Plugin</h3><br /><br /><a href="'. get_bloginfo('url') .'/wp-admin/plugins.php" class="sbtn buynow">Manage Plugins</a>';
+		}
+		return;
+	}
+	
 	global $wpsc_checkout;
 	$wpsc_checkout = new wpsc_checkout();
 	$formfields = array(
