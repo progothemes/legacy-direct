@@ -109,7 +109,7 @@ if ( ! function_exists( 'progo_direct_submitbtn' ) ):
  * @since Direct 1.0.45
  */
 function progo_direct_submitbtn( $pid=0, $btxt = 'BUY NOW' ) {
-	return function_exists('wpsc_checkout') ? '<input type="submit" id="product_'. absint($pid) .'_submit_button" name="Buy" value="'. esc_html($btxt) .'" class="buynow sbtn" />' : '';
+	return function_exists('wpsc_have_checkout_items') ? '<input type="submit" id="product_'. absint($pid) .'_submit_button" name="Buy" value="'. esc_html($btxt) .'" class="buynow sbtn" />' : '';
 }
 endif;
 if ( ! function_exists( 'progo_posted_on' ) ):

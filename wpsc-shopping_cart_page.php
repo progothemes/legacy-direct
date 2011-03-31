@@ -238,6 +238,7 @@ $options = get_option('progo_options');
 <table><tr><td>
       <?php  //this HTML displays activated payment gateways
 	  do_action('progo_pre_gateways');
+	  $haveformfields = false;
 	  if(wpsc_gateway_count() > 1): // if we have more than one gateway enabled, offer the user a choice ?>
          <tr>
          <td colspan='2' class='wpsc_gateway_container'>
@@ -251,18 +252,22 @@ $options = get_option('progo_options');
                      	<?php endif; ?>
                      </label>
 
-                  <?php if(wpsc_gateway_form_fields()): ?>
+                  <?php if(wpsc_gateway_form_fields()) {
+					  $haveformfields = true;
+					  ?>
                      <table class='wpsc_checkout_table <?php echo wpsc_gateway_form_field_style();?>'>
                         <?php echo wpsc_gateway_form_fields();?>
                      </table>
-                  <?php endif; ?>
+                  <?php } ?>
                </div>
             <?php endwhile; ?>
          <?php else: // otherwise, there is no choice, stick in a hidden form ?>
             <?php while (wpsc_have_gateways()) : wpsc_the_gateway(); ?>
                <input name='custom_gateway' value='<?php echo wpsc_gateway_internal_name();?>' type='hidden' />
 
-                  <?php if(wpsc_gateway_form_fields()): ?>
+                  <?php if(wpsc_gateway_form_fields()):
+					  $haveformfields = true;
+					  ?>
                      <table class='wpsc_checkout_table <?php echo wpsc_gateway_form_field_style();?>'>
                         <?php echo wpsc_gateway_form_fields();?>
                      </table>
@@ -292,8 +297,8 @@ echo '<br />';
 <?php } ?>
 </div>
 </td></tr>
-<tr><td align="center" valign="top"><?php echo $options['credentials']; ?></td></tr>
-            <tr><td height="63">
+<tr><td align="center" valign="top"><?php echo ( $options['credentials'] != '' ? $options['credentials'] : '<br />' ); ?></td></tr>
+            <tr><td height="<?php echo ( $haveformfields ? '63' : '100%" valign="top' ); ?>">
 <!-- div for make purchase button -->
       <div class='wpsc_make_purchase'>
          <span>
