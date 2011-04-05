@@ -347,7 +347,6 @@ function progo_admin_menu_cleanup() {
 	add_submenu_page( 'progo_admin', 'Shipping Settings', 'Shipping Settings', 'edit_theme_options', 'progo_shipping', 'progo_admin_page' );
 	add_submenu_page( 'progo_admin', 'Payment Gateway', 'Payment Gateway', 'edit_theme_options', 'progo_gateway', 'progo_admin_page' );
 	add_submenu_page( 'progo_admin', 'Appearance', 'Appearance', 'edit_theme_options', 'progo_appearance', 'progo_admin_page' );
-	//add_submenu_page( 'progo_admin', 'Store Settings', 'Store Settings', 'edit_theme_options', 'wpsc-settings', 'options-general.php' );
 	add_submenu_page( 'progo_admin', 'Sidebar Widgets', 'Sidebar Widgets', 'edit_theme_options', 'widgets.php' );
 	add_submenu_page( 'progo_admin', 'Footer Menu', 'Footer Menu', 'edit_theme_options', 'nav-menus.php' );
 	
@@ -380,7 +379,7 @@ function progo_admin_menu_cleanup() {
 	//wp_die('<pre>'. print_r($submenu,true) .'</pre>');
 }
 endif;
-if ( ! function_exists( 'progo_admin_page' ) ):
+if ( ! function_exists( 'progo_admin_page_tabs' ) ):
 /**
  * helper function to print tabs atop ProGo Admin Pages
  *
@@ -756,11 +755,11 @@ function progo_admin_page_scripts() {
     <script type="text/javascript">//<![CDATA[
 addLoadEvent = function(func){if(typeof jQuery!="undefined")jQuery(document).ready(func);else if(typeof wpOnload!='function'){wpOnload=func;}else{var oldonload=wpOnload;wpOnload=function(){oldonload();func();}}};
 var userSettings = {
-		'url': '/newdirect/',
+		'url': '<?php echo trailingslashit(get_bloginfo('url')); ?>',
 		'uid': '1',
 		'time':'1301702115'
 	},
-	ajaxurl = 'http://www.ninthlink.net/newdirect/wp-admin/admin-ajax.php',
+	ajaxurl = '<?php echo trailingslashit(get_bloginfo('url')); ?>wp-admin/admin-ajax.php',
 	pagenow = 'settings_page_wpsc-settings',
 	typenow = '',
 	adminpage = 'settings_page_wpsc-settings',
