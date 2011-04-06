@@ -237,7 +237,7 @@ function progo_direct_form_fields( $includeshipping = true, $hideboth = false ) 
 		}
 	
 		$shortenzip = false;
-		echo '<pre style="display:none">'. print_r($wpsc_checkout, true) .'</pre>';
+		//echo '<pre style="display:none">'. print_r($wpsc_checkout, true) .'</pre>';
 	foreach( $fieldset as $i => $item ) {
 		if ( $item->type == 'address' ) $item->type = 'text';
 		$wpsc_checkout->checkout_item = $item;
@@ -623,7 +623,7 @@ try{convertEntities(wpsc_adminL10n);}catch(e){};
     <?php progo_admin_page_tabs($thispage);
 	
 	$options = get_option( 'progo_options' );
-	echo '<pre style="display:none">'. print_r($options,true) .'</pre>';
+	//echo '<pre style="display:none">'. print_r($options,true) .'</pre>';
 	?>
     <form action="options.php" method="post" enctype="multipart/form-data" class="progo-form"><?php settings_fields( 'progo_options' ); ?>
     <div id="dashboard-widgets-wrap">
