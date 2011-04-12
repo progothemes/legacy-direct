@@ -550,7 +550,7 @@ try{convertEntities(wpsc_adminL10n);}catch(e){};
          	<div id="progo_welcome" class="postbox">
             	<h3 class="hndle"><span>Welcome</span></h3>
                 <div class="inside">
-                    <p><img src="<?php bloginfo( 'template_url' ); ?>/images/logo_progo.png" style="float:right; margin: 0 0 21px 21px" alt="ProGo Themes" />ProGo Themes are Easy and Quick to Set Up using our Step-by-Step Process.<br /><br /><a href="http://www.progo.com/ProGo_QuickStartGuide.pdf" target="_blank">Download the ProGo Themes Quick Start Guide (PDF)</a></p>
+                    <p><img src="<?php bloginfo( 'template_url' ); ?>/images/logo_progo.png" style="float:right; margin: 0 0 21px 21px" alt="ProGo Themes" />ProGo Themes are Easy and Quick to Set Up using our Step-by-Step Process.<br /><br /><a href="http://www.progo.com/resources/QuickStartGuide-DirectResponse.pdf" target="_blank">Download the ProGo Themes Quick Start Guide (PDF)</a></p>
                 </div>
             </div>
         	<div id="progo_plugs" class="postbox">
