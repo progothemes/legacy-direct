@@ -2245,7 +2245,13 @@ function progo_admin_bar_render() {
 	
 	// add links to ProGo Direct Response pages
 	$wp_admin_bar->add_menu( array( 'parent' => 'new-content', 'id' => 'new_directresponse', 'title' => __('Direct Response Page'), 'href' => admin_url( 'admin.php?progo_admin_action=newdirect') ) );
-	$wp_admin_bar->add_menu( array( 'parent' => 'appearance', 'id' => 'progo_appearance', 'title' => __('Appearance'), 'href' => admin_url('admin.php?page=progo_appearance') ) );
+	$wp_admin_bar->remove_menu('appearance');
+	$wp_admin_bar->add_menu( array( 'id' => 'appearance', 'title' => __('Appearance'), 'href' => admin_url('admin.php?page=progo_appearance') ) );
+	// move Appearance > Widgets & Menus submenus to below our new ones
+	$wp_admin_bar->remove_menu('widgets');
+	$wp_admin_bar->remove_menu('menus');
+	$wp_admin_bar->add_menu( array( 'parent' => 'appearance', 'id' => 'widgets', 'title' => __('Sidebar Widgets'), 'href' => admin_url('widgets.php') ) );
+	$wp_admin_bar->add_menu( array( 'parent' => 'appearance', 'id' => 'menus', 'title' => __('Footer Menu'), 'href' => admin_url('nav-menus.php') ) );
 	
 	$avail = progo_colorschemes();
 	if ( count($avail) > 0 ) {
@@ -2254,11 +2260,6 @@ function progo_admin_bar_render() {
 	foreach($avail as $color) {
 		$wp_admin_bar->add_menu( array( 'parent' => 'progo_colorscheme', 'id' => 'progo_colorscheme'.esc_attr($color), 'title' => esc_attr($color), 'href' => admin_url('admin.php?progo_admin_action=color'. esc_attr($color) ) ) );
 	}
-	// move Appearance > Widgets & Menus submenus to below our new ones
-	$wp_admin_bar->remove_menu('widgets');
-	$wp_admin_bar->remove_menu('menus');
-	$wp_admin_bar->add_menu( array( 'parent' => 'appearance', 'id' => 'widgets', 'title' => __('Sidebar Widgets'), 'href' => admin_url('widgets.php') ) );
-	$wp_admin_bar->add_menu( array( 'parent' => 'appearance', 'id' => 'menus', 'title' => __('Footer Menu'), 'href' => admin_url('nav-menus.php') ) );
 	
 	if ( is_page_template('directresponse.php') ) {
 		global $post;
