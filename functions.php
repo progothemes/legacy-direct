@@ -550,7 +550,7 @@ try{convertEntities(wpsc_adminL10n);}catch(e){};
          	<div id="progo_welcome" class="postbox">
             	<h3 class="hndle"><span>Welcome</span></h3>
                 <div class="inside">
-                    <p><img src="<?php bloginfo( 'template_url' ); ?>/images/logo_progo.png" style="float:right; margin: 0 0 21px 21px" alt="ProGo Themes" />ProGo Themes are Easy and Quick to Set Up using our Step-by-Step Process.<br /><br /><a href="http://www.progo.com/resources/QuickStartGuide-DirectResponse.pdf" target="_blank">Download the ProGo Themes Quick Start Guide (PDF)</a></p>
+                    <p><img src="<?php bloginfo( 'template_url' ); ?>/images/logo_progo.png" style="float:right; margin: 0 0 21px 21px" alt="ProGo Themes" />ProGo Themes are Easy and Quick to Set Up using our Step-by-Step Process.<br /><br /><a href="http://www.progo.com/resources/QuickStartGuide-DirectResponse.pdf" target="_blank">Download the ProGo Direct Response Theme Quick Start Guide (PDF)</a></p>
                 </div>
             </div>
         	<div id="progo_plugs" class="postbox">
@@ -864,12 +864,12 @@ function progo_admin_init() {
 	add_action( 'admin_print_scripts', 'progo_admin_page_scripts' );
 	
 	// Site Settings pages
-	register_setting( 'progo_api_options', 'progo_api_options', 'progo_options_validate' );
+	register_setting( 'progo_api_options', 'progo_api_options', 'progo_validate_options' );
 	
 	add_settings_section( 'progo_api', 'ProGo Themes API Key', 'progo_section_text', 'progo_api_settings' );
 	add_settings_field( 'progo_api_key', 'API Key', 'progo_field_apikey', 'progo_api_settings', 'progo_api' );
 	
-	register_setting( 'progo_options', 'progo_options', 'progo_options_validate' );
+	register_setting( 'progo_options', 'progo_options', 'progo_validate_options' );
 	
 	add_settings_section( 'progo_theme', 'Theme Customization', 'progo_section_text', 'progo_theme' );
 	add_settings_field( 'progo_colorscheme', 'Color Scheme', 'progo_field_color', 'progo_theme', 'progo_theme' );
@@ -1481,7 +1481,7 @@ function progo_options_defaults() {
 		$def = array(
 			"colorscheme" => "LightGrey",
 			"logo" => "",
-			"favicon" => "",
+			//"favicon" => "",
 			"blogname" => get_option( 'blogname' ),
 			"blogdescription" => get_option( 'blogdescription' ),
 			"showdesc" => 1,
@@ -1506,17 +1506,17 @@ function progo_options_defaults() {
 	update_option( 'large_size_h', 413 );
 }
 
-if ( ! function_exists( 'progo_options_validate' ) ):
+if ( ! function_exists( 'progo_validate_options' ) ):
 /**
  * ProGo Site Settings Options validation function
- * from register_setting( 'progo_options', 'progo_options', 'progo_options_validate' );
+ * from register_setting( 'progo_options', 'progo_options', 'progo_validate_options' );
  * in progo_admin_init()
  * also handles uploading of custom Site Logo
  * @param $input options to validate
  * @return $input after validation has taken place
  * @since Direct 1.0
  */
-function progo_options_validate( $input ) {
+function progo_validate_options( $input ) {
 	if( isset($input['apikey']) ) {
 		$input['apikey'] = wp_kses( $input['apikey'], array() );
 		// store API KEY in its own option
