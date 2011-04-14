@@ -969,15 +969,17 @@ function progo_direct_widgets() {
 		'after_title' => '</span></h3><div class="inside">'
 	));
 	
+	$progo_widgets = array( 'EasySecure', 'Share', 'Testimonials' );
+	foreach ( $progo_widgets as $w ) {
+		require_once( 'widgets/widget-'. strtolower($w) .'.php' );
+		register_widget( 'ProGo_Widget_'. $w );
+	}
 	
-	require_once( 'widgets/widget-easysecure.php' );
-	register_widget( 'ProGo_Widget_EasySecure' );
-	
-	require_once( 'widgets/widget-share.php' );
-	register_widget( 'ProGo_Widget_Share' );
-	
-	require_once( 'widgets/widget-testimonials.php' );
-	register_widget( 'ProGo_Widget_Testimonials' );
+	// also want to UNREGISTER widgets that are just for (blog) POSTS
+	$remove_widgets = array( 'WP_Widget_Calendar', 'WP_Widget_Archives', 'WP_Widget_Categories', 'WP_Widget_Recent_Posts', 'WP_Widget_Recent_Comments', 'WP_Widget_Tag_Cloud' );
+	foreach ( $remove_widgets as $w ) {
+		unregister_widget( $w );
+	}
 }
 endif;
 if ( ! function_exists( 'progo_metabox_cleanup' ) ):
