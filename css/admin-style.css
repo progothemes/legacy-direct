@@ -11,23 +11,23 @@ table.form-table label { font-size: 13px; }
 /* PROGO DIRECT METABOX ON DIRECT MARKET PAGES */
 #progo_screen { display: block; width: 373px; height: 228px; position: relative; background:url(../images/LightGrey/screenshot.jpg) no-repeat 0 0; font-family: Arial, Helvetica, sans-serif; border: 1px solid #ccc; }
 
-#ptitle, #parr { font-size: 14px; position: absolute; top: 44px; left: 11px; }
+#ptitle, #parr { font-size: 14px; position: absolute; top: 44px; left: 11px; font-weight: bold; letter-spacing: -0.05em; }
 #progo_screen.StrongBlue #ptitle { color: #fff; }
-#pget { font-size: 10px; position: absolute; top: 79px; left: 144px; }
-#parr { font-weight: bold; font-size: 15px; color: #fff; top: 203px; }
+#pget { font-size: 10px; position: absolute; top: 79px; left: 144px; font-weight: bold }
+#parr { font-size: 15px; color: #fff; top: 203px }
 #progo_screen.Light #parr { color: #3E3E3E; }
 #pimg { position:absolute; width: 119px; height: 117px; top: 69px; left: 10px; }
 
 #pprice { position: absolute; top: 85px; left: 145px; font-size: 10px }
 #pprice .s { background: url(../images/s.gif) repeat-x 0 6px; }
 #pprice .sale { color: #f00; }
-#pprice .p { font-size: 19px; font-weight: bold; position: relative; top: 5px }
-#pprice .c { position: relative; top: -2px; }
+#pprice .p { font-size: 19px; font-weight: bold; position: relative; top: 5px; letter-spacing: -0.05em }
+#pprice .c { position: relative; top: -2px; left: 2px; }
 #pprice .d { display: none; }
 
-#pta { width: 116px; position: absolute; top: 2px; right: 2px; font-size: 15px; line-height: 14px; text-align: center; color: #fff; }
-#prh { width: 125px; position:absolute; top: 42px; left: 250px; text-align: center; font-size: 10px; line-height: 11px; font-family: Tahoma, Geneva, sans-serif; }
-#pbn { width: 100px; position: absolute; top:205px; left: 264px; text-align: center; font-weight: bold; font-size: 11px; color: #fff; }
+#pta { width: 116px; position: absolute; top: 2px; right: 2px; font: bold 15px/15px Arial, Helvetica, sans-serif; text-align: center; color: #fff; }
+#prh { width: 125px; position:absolute; top: 42px; left: 250px; text-align: center; font-size: 10px; line-height: 11px; letter-spacing: -0.08em; }
+#pbn { width: 100px; position: absolute; top:204px; left: 264px; text-align: center; font-weight: bold; font-size: 11px; color: #fff; }
 
 /* for other color schemes */
 #progo_screen.BlackGrey { background-image:url(../images/BlackGrey/screenshot.jpg); }

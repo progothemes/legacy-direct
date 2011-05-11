@@ -1101,7 +1101,7 @@ foreach ( $prods as $p ) {
 	<p><input type="text" name="_progo[buynow]" size="18" maxlength="<?php esc_html_e( $direct[buynow] ); ?>" onkeydown="progo_cc( this, document.post.c_bn, false )" onKeyUp="progo_cc( this, document.post.c_bn, 'pbn' )" value="<?php esc_html_e( $direct[buynow] ); ?>" /> <input type="text" name="c_bn" size="2" maxlength="3" style="text-align:center;" value="<?php echo strlen( $direct[buynow] );?>" readonly="readonly" /> / <?php esc_html_e( progo_direct_charcutoff( 'buynow' ) ); ?> characters max</p>
     </td><td width="375">
 <?php if ( count( $colorschemes ) > 0 ) { ?>    
-<p>Page Preview:</p><div id="progo_screen" class="<?php echo esc_attr($colorscheme); ?>">
+<p>Page Preview: <em>* rough example of how your text will display</em></p><div id="progo_screen" class="<?php echo esc_attr($colorscheme); ?>">
     <!-- thanks andyK for this idea! -->
     <div id="ptitle"><?php the_title(); ?></div>
     <div id="pget"><?php if ( strlen($direct[getyours]) ) { esc_html_e($direct[getyours]); } ?></div>
