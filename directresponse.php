@@ -27,7 +27,11 @@ $direct[productmeta] = get_post_meta($direct[plink],'_wpsc_product_metadata',tru
 if(has_post_thumbnail($post->ID)) {
 	// post Featured Image overwrites product image & bullet points...
 	$pagetitle = esc_attr(the_title('','',false));
-	echo get_the_post_thumbnail( $post->ID, 'original', array('id'=>'topimg', 'alt'=>$pagetitle, 'title'=>$pagetitle));
+	$topimg = get_the_post_thumbnail( $post->ID, 'original', array('id'=>'topimg', 'alt'=>$pagetitle, 'title'=>$pagetitle));
+	if($_SERVER['HTTPS'] == "on") {
+		$topimg = str_replace('http:','https:',$topimg);
+	}
+	echo $topimg;
 } else { ?>
 <div id="prod">
 <h1><?php the_title(); ?></h1>

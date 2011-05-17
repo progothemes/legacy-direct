@@ -95,10 +95,13 @@ if ( ! function_exists( 'progo_sitelogo' ) ):
 function progo_sitelogo() {
 	$options = get_option( 'progo_options' );
 	$progo_logo = $options['logo'];
-	$upload_dir = wp_upload_dir();
-	$dir = trailingslashit($upload_dir['baseurl']);
-	$imagepath = $dir . $progo_logo;
 	if($progo_logo) {
+		$upload_dir = wp_upload_dir();
+		$dir = trailingslashit($upload_dir['baseurl']);
+		$imagepath = $dir . $progo_logo;
+		if($_SERVER['HTTPS'] == "on") {
+			$imagepath = str_replace('http:','https:',$imagepath);
+		}
 		echo '<table id="logo"><tr><td><img src="'. esc_attr( $imagepath ) .'" alt="'. esc_attr( get_bloginfo( 'name' ) ) .'" /></td></tr></table>';
 	} else {
 		echo '<div id="logo">'. esc_html( get_bloginfo( 'name' ) ) .'<span class="g"></span></div>';
