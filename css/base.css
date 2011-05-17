@@ -18,7 +18,7 @@ body, input, textarea, .pingback a.url { font-family: Arial, Helvetica, sans-ser
 #container { float: left; margin: 0; background: url(../images/LightGrey/main.png) repeat-x 0 0; position: relative;}
 #main { float:left; }
 
-#topimg { float: left; width: 650px; height: 413px; }
+#topimg { float: left; width: 650px; height: 413px; margin-left: -10px }
 #prod { float: left; width: 100%; height: 413px; color: #333;}
 #pimg { margin-right: 21px; }
 #pimg img { float: left; width: 100%; height: 300px; padding: 7px 22px 8px; background: url(../images/prod_bg.png) no-repeat 0 0; margin: 0 0 0 -16px }
