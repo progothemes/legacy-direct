@@ -60,6 +60,9 @@ function progo_setup() {
 	add_action( 'wp_before_admin_bar_render', 'progo_admin_bar_render' );
 	add_action( 'get_header', 'progo_header_check' );
 	
+	remove_action('wp_head', 'st_widget_head');
+	add_action('wp_head', 'progo_st_widget_head');
+	
 	// add custom filters
 //	add_filter( 'parse_query', 'progo_directresponse_query' );
 	add_filter( 'the_post', 'progo_directresponse_post' );
@@ -2440,5 +2443,26 @@ if ( isset( $_REQUEST['wpsc_ajax_action'] ) && ($_REQUEST['wpsc_ajax_action'] ==
 if(!function_exists('progo_mail_content_type')):
 function progo_mail_content_type( $content_type ) {
 	return 'text/html';
+}
+endif;
+
+
+if(!function_exists('progo_st_widget_head')) :
+/**
+ * force SHARETHIS through https
+ * @since Direct 1.0.79
+ */
+function progo_st_widget_head() {
+	$widget = get_option('st_widget');
+	if ($widget != '') {
+		$widget = preg_replace(
+			"/\<script\s([^\>]*)src\=\"http\:\/\/sharethis/"
+			, "<script $1src=\"https://ws.sharethis"
+			, $widget
+		);
+		$widget = preg_replace("/\&/", "&amp;", $widget);
+		$widget = str_replace('http://w.sharethis.com/button/buttons.js', 'https://ws.sharethis.com/button/buttons.js', $widget);
+	}
+	print($widget);
 }
 endif;

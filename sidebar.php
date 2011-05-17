@@ -29,9 +29,12 @@ $direct = $custom[0];
  </div></div>
  
  <div class="block share"><h3 class="title"><span class="spacer">Share</span></h3><div class="inside">
+ <?php if (function_exists('sharethis_button')) {
+	 sharethis_button();
+	 } else { ?>
  <a name="fb_share" type="icon" href="http://www.facebook.com/sharer.php">Share</a><script src="http://static.ak.fbcdn.net/connect.php/js/FB.Share" type="text/javascript"></script>
  <a href="http://twitter.com/share?url=<?php echo urlencode(get_permalink($post->ID)); ?>&amp;text=Check%20Out%20This%20Great%20Product!%20" class="twitter" target="_blank">Tweet</a>
- <?php if (function_exists('sharethis_button')) { sharethis_button(); } ?>
+     <?php } ?>
  </div></div>
  
  <?php
