@@ -9,7 +9,7 @@
 
 get_header(); ?>
     <div id="container" class="container_12">
-        <div id="main" role="main" class="grid_8">
+        <div id="main" class="grid_8">
 
 <?php if ( have_posts() ) : ?>
 				<h1 class="page-title"><?php printf( __( 'Search Results for: %s', 'twentyten' ), '<span>' . get_search_query() . '</span>' ); ?></h1>

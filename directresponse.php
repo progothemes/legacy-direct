@@ -11,7 +11,7 @@
 get_header(); 
 $options = get_option('progo_options'); ?>
     <div id="container" class="container_12 direct">
-        <div id="main" role="main" class="grid_8">
+        <div id="main" class="grid_8">
 <?php if ( have_posts() ) while ( have_posts() ) : the_post();
 
 $custom = get_post_meta($post->ID,'_progo');

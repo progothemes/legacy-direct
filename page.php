@@ -29,7 +29,7 @@ if($post->post_parent > 0) {
 	}
 }
 ?>
-			<div id="main" role="main" class="grid_<?php echo absint($maincols); ?>">
+			<div id="main" class="grid_<?php echo absint($maincols); ?>">
 <div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 <h1 class="page-title"><?php
 if($post->post_name == 'checkout') {

@@ -14,7 +14,7 @@
 
 get_header(); ?>
         <div id="container" class="container_12">
-			<div id="main" role="main" class="grid_8">
+			<div id="main" class="grid_8">
 
 <?php
 	/* Queue the first post, that way we know
