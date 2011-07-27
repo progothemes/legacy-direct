@@ -43,6 +43,9 @@ function progo_setup() {
 		'footer' => 'Footer Links',
 	) );
 	
+	// Add support for custom backgrounds
+	add_custom_background();
+	
 	// This theme uses post thumbnails
 	add_theme_support( 'post-thumbnails' );
 	add_image_size( 'large', 650, 413, true );
@@ -74,6 +77,8 @@ function progo_setup() {
 	add_filter( 'admin_post_thumbnail_html', 'progo_admin_post_thumbnail_html' );
 	add_filter( 'wpsc_pre_transaction_results', 'progo_prepare_transaction_results' );
 	add_filter( 'wp_mail_content_type', 'progo_mail_content_type' );
+	add_filter('custom_menu_order', 'progo_admin_menu_order');
+	add_filter('menu_order', 'progo_admin_menu_order');
 	
 	if ( !is_admin() ) {
 		// brick it if not activated
@@ -339,6 +344,7 @@ if ( ! function_exists( 'progo_admin_menu_cleanup' ) ):
  */
 function progo_admin_menu_cleanup() {
 	global $menu, $submenu;
+	// remove unwanted links...
 	$restricted = array( 'Posts', 'Links', 'Comments' );
 	end ( $menu );
 	while ( prev( $menu ) ) {
@@ -347,6 +353,17 @@ function progo_admin_menu_cleanup() {
 			unset( $menu[key( $menu )] );
 		}
 	}
+	
+	// add Theme Options under APPEARANCE
+	add_theme_page( 'Theme Options', 'Theme Options', 'edit_theme_options', 'progo_admin', 'progo_admin_page' );
+	// and reorder that APPEARANCE submenu
+	$sub = $submenu['themes.php'];
+	$sub1 = array_shift($sub);
+	rsort($sub);
+	$sub1[0] = 'Change Theme';
+	$sub[] = $sub1;
+	$submenu['themes.php'] = $sub;
+	/*
 	// add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position )
 	add_menu_page( 'Installation', 'ProGo Themes', 'edit_theme_options', 'progo_admin', 'progo_admin_page', get_bloginfo( 'template_url' ) .'/images/logo_menu.png', 5 );
 	add_submenu_page( 'progo_admin', 'Installation', 'Installation', 'edit_theme_options', 'progo_admin', 'progo_admin_page' );
@@ -355,9 +372,7 @@ function progo_admin_menu_cleanup() {
 	add_submenu_page( 'progo_admin', 'Appearance', 'Appearance', 'edit_theme_options', 'progo_appearance', 'progo_admin_page' );
 	add_submenu_page( 'progo_admin', 'Sidebar Widgets', 'Sidebar Widgets', 'edit_theme_options', 'widgets.php' );
 	add_submenu_page( 'progo_admin', 'Footer Menu', 'Footer Menu', 'edit_theme_options', 'nav-menus.php' );
-	
-	// add an extra dividing line...
-	$menu[6] = $menu[4];
+	*/
 	
 	$num = count( get_posts( 'post_type=page&meta_key=_wp_page_template&meta_value=directresponse.php' ) );
 	if ( $num > 0 ) {
@@ -374,15 +389,22 @@ function progo_admin_menu_cleanup() {
 	// no VARIATIONS right now
 	unset( $submenu['edit.php?post_type=wpsc-product'][17] );
 	
-	
-	// and lets move MEDIA to after PRODUCTS
-	$menu[50] = $menu[10];
-	unset($menu[10]);
-	// and lets move PRODUCTS to before PAGES
-	$menu[10] = $menu[26];
-	unset($menu[26]);
-	
 	//wp_die('<pre>'. print_r($submenu,true) .'</pre>');
+}
+endif;
+if ( ! function_exists( 'progo_admin_menu_order' ) ):
+function progo_admin_menu_order($menu_ord) {
+	if ( ! $menu_ord ) return true;
+	return array(
+		'index.php', // this represents the dashboard link
+		'separator1',
+		'edit.php?post_type=wpsc-product', // Products
+		'edit.php?post_type=page', // Pages
+		'edit.php', // Posts
+		'upload.php', // Media
+		'edit-comments.php', // Comments
+		'link-manager.php' // Links
+	);
 }
 endif;
 if ( ! function_exists( 'progo_admin_page_tabs' ) ):
@@ -440,128 +462,68 @@ try{convertEntities(wpsc_adminL10n);}catch(e){};
 		case "progo_admin":
 	?>
 	<div class="wrap">
-    <div class="icon32" id="icon-options-general"><br /></div>
-    <?php progo_admin_page_tabs($thispage); ?>
-    <div id="dashboard-widgets-wrap">
-    <div id="dashboard-widgets" class="metabox-holder">
-    	<div class="postbox-container" style="width:64%">
-        	<div id="progo_setup_install" class="postbox">
-            	<h3 class="hndle"><span>ProGo Themes API Key</span></h3>
-                <div class="inside noh3">
-		<form action="options.php" method="post" enctype="multipart/form-data"><?php
-		settings_fields( 'progo_api_options' );
-		do_settings_sections( 'progo_api_settings' );
-		?><p class="submit"><input type="submit" name="updateoption" value="Update &raquo;" /></p>
-		</form>
-                </div>
-            </div>
-        	<div id="progo_setup_steps" class="postbox">
-            	<h3 class="hndle"><span>WP e-Commerce Plugin</span></h3>
-                <div class="inside">
-                    <?php
-	$options = get_option( 'progo_options' );
-	// Display whatever it is you want to show
-	$greyout = ' style="color: #999;"';
-	/*
-	echo '<ol>';
-	$lnk = '<a href="admin.php?page=progo_site_settings" title="Site Settings">';
-	echo '<li>Update your custom '. $lnk .'Site Settings</a> under <strong>ProGo Themes</strong> in the left menu. Customize...';
-	echo "<ul><li>Your Site's Name : ". $lnk . get_option( 'blogname' ) ."</a></li><li>Color Scheme : ". $lnk . esc_html( $options['colorscheme'] ) ."</a></li></ul></li>";
-	*/
-	echo "<h3>Your <em>Direct Response</em> ProGo Theme works hand-in-hand with the <strong>WP e-Commerce</strong> Plugin.</h3><p>";
+    <div class="icon32" id="icon-themes"><br /></div>
+    <h2>ProGo Direct Response Theme Options</h2>
+	<form action="options.php" method="post" enctype="multipart/form-data"><?php
+		settings_fields( 'progo_options' );
+		do_settings_sections( 'progo_api' );
+		?>
+        <p class="submit"><input type="submit" value="Save Changes" class="button-primary" /></p>
+        <?php
+		do_settings_sections( 'progo_theme' );
+		do_settings_sections( 'progo_info' );
+		do_settings_sections( 'progo_checkout' );
+		?>
+        <p class="submit"><input type="submit" value="Save Changes" class="button-primary" /></p>
+        <h3>WP e-Commerce</h3>
+		<p>Your ProGo <em>Direct Response</em> Theme works hand-in-hand with the <strong>WP e-Commerce</strong> Plugin.</p>
+		<?php
 	// check for wp-e-commerce installed..
 	$plugs = get_plugins();
-	$goon = isset( $plugs['wp-e-commerce/wp-shopping-cart.php'] );
-	if( $goon ) {
-		echo "<strong>Congratulations!</strong> WP e-Commerce appears to be installed.";
-	} else {
+	if( isset( $plugs['wp-e-commerce/wp-shopping-cart.php'] ) == false ) {
 		$lnk = ( function_exists( 'wp_nonce_url' ) ) ? wp_nonce_url( 'update.php?action=install-plugin&amp;plugin=wp-e-commerce', 'install-plugin_wp-e-commerce' ) : 'plugin-install.php';
-		echo '<a href="'. esc_url( $lnk ) .'" class="button-primary">Install the WP e-Commerce Plugin now</a></strong>';
-		$goon = false;
-	}
-	echo '</p>';
-	
-	//is WP e-Commerce Plugin activated?
-	if ( $goon ) {
+		echo '<p><a href="'. esc_url( $lnk ) .'" class="button-primary">Install WP e-Commerce now &raquo;</a></p>';
+	} else {
 		if ( function_exists('wpsc_admin_pages')) {
-			echo "<p>WP e-Commerce Plugin is activated!</p>";
-			
-			//check wpsc settings dimensions for thumbnail (product_image) & product image (single_view_image)
-			if ( get_option( 'product_image_width' ) == 70 && get_option( 'product_image_height' ) == 70 && get_option( 'single_view_image_width' ) == 300 && get_option( 'single_view_image_height' ) == 300 ) {
-				echo "<p>WP e-Commerce settings match ProGo Themes' Recommended Settings!</p>";
-			} else {
-				echo "<p><strong>A few WP e-Commerce Store Settings, like Product Thumbnail Sizes, differ from ProGo Themes' Recommended Settings</strong><br /><br />";
-				echo '<a href="'.wp_nonce_url("admin.php?progo_admin_action=reset_wpsc", 'progo_reset_wpsc').'" class="button-primary">Click Here to Reset</a></p>';
-			}
-			echo '<p><br /></p>';
-			wpsc_options_general();
+			?><table class="form-table">
+            <tr valign="top">
+            <th scope="row">Store Settings</th>
+            <td><?php progo_direct_reccheck( true ); ?></td></tr>
+            </table><?php
         } else {
 			$lnk = ( function_exists( 'wp_nonce_url' ) ) ? wp_nonce_url('plugins.php?action=activate&amp;plugin=wp-e-commerce/wp-shopping-cart.php&amp;plugin_status=all&amp;paged=1', 'activate-plugin_wp-e-commerce/wp-shopping-cart.php') : 'plugins.php';
-			echo '<p><a href="'. esc_url($lnk) .'" class="button-primary">Click Here to activate the WP e-Commerce Plugin</a><p>';
+			echo '<p><a href="'. esc_url($lnk) .'" class="button-primary">Activate WP e-Commerce &raquo;</a><p>';
 			$goon = false;
 		}
 	}
-	/*
-	// check # of Products (at least 1?)
-	if ( $goon ) {
-		echo '<li>';
-		$num = wp_count_posts( 'wpsc-product' );
-		$num = $num->publish;
-		if ( $num > 0 ) {
-			$lnk = '<a href="edit.php?post_type=wpsc-product">';
-			echo 'You have '. $lnk . absint( $num ) .' Product'. ( $num > 1 ? 's' : '' ) .'</a> set up in WP e-Commerce. ';
-			echo '<ul><li>'. $lnk .'Edit Product'. ( $num > 1 ? 's' : '' ) .'</a></li>';
-			echo '<li><a href="post-new.php?post_type=wpsc-product">Add Another Product</a></li></ul>';
-		} else {
-			$goon = false;
-			echo '<a href="post-new.php?post_type=wpsc-product">Create your first Product.</a>';
-		}
-
-	} else {
-		echo '<li'. $greyout .'>Have you created at least 1 Product?';
-	}
-	echo '</li>';
-	// check for any Direct Response pages?
-	if ( $goon ) {
-		// first, quick fix for ProGo Direct Response v1.0.29
-		$num = get_posts( 'post_type=page&meta_key=_wp_page_template&meta_value=directmarket.php' );
-		foreach ( $num as $p ) {
-			// renaming "directmarket.php" template to "directresponse.php" template
-			update_post_meta( $p->ID, '_wp_page_template', 'directresponse.php' );
-		}
-		
-		$num = get_posts( 'post_type=page&meta_key=_wp_page_template&meta_value=directresponse.php' );
-		$num = count( $num );
-		if ( $num > 0 ) {
-			echo '<li>You have '. absint( $num ) .' <a href="edit.php?s&post_type=page&progo_template=directresponse.php">Direct Response</a> Page'. ( $num > 1 ? 's' : '' ) .'.';
-			echo '<ul>';
-			echo '<li><a href="edit.php?s&post_type=page&progo_template=directresponse.php">View your current Direct Response pages</a></li>';
-			echo '<li><a href="'.wp_nonce_url("admin.php?progo_admin_action=newdirect", 'progo_newdirect').'">Create another Direct Response page</a></li>';
-			echo '</ul>';
-		} else {
-			echo '<li>You are now ready to create your first Direct Response page. To do so, just <a href="post-new.php?post_type=page">Create a New Page</a>, and in the <strong>Templates</strong> area in the <strong>Page Attributes</strong> box in the right column, choose <strong>Direct Response Page</strong>. More options will appear after the first time you Save the new Page.';
-		}
-	} else {
-		echo '<li'. $greyout .'>Direct Response Page(s)?';
-	}
-	echo '</li>';
-	
-	echo '</ol>';
-	*/
-					?>
-                </div>
-            </div>
-         </div>
-         <div class="postbox-container" style="width:35%">
-         	<div id="progo_welcome" class="postbox">
-            	<h3 class="hndle"><span>Welcome</span></h3>
-                <div class="inside">
-                    <p><img src="<?php bloginfo( 'template_url' ); ?>/images/logo_progo.png" style="float:right; margin: 0 0 21px 21px" alt="ProGo Themes" />ProGo Themes are Easy and Quick to Set Up using our Step-by-Step Process.<br /><br /><a href="http://www.progo.com/resources/QuickStartGuide-DirectResponse.pdf" target="_blank">Download the ProGo Direct Response Theme Quick Start Guide (PDF)</a></p>
-                </div>
-            </div>
-        	<div id="progo_plugs" class="postbox">
-            	<h3 class="hndle"><span>Recommended Plugins</span></h3>
-                <div class="inside">
+		?>
+		<p><br /></p>
+		</form>
+        <h3>Additional Options</h3>
+        <table class="form-table">
+        <?php
+		$addl = array(
+			'Background' => array(
+				'url' => 'themes.php?page=custom-background',
+				'btn' => 'Customize Your Background',
+				'desc' => 'Change the underlying color, or upload your own custom background image.'
+			),
+			'Menus' => array(
+				'url' => 'nav-menus.php',
+				'btn' => 'Manage Menu Links',
+				'desc' => 'Control the links in the Footer area of your site.'
+			),
+			'Widgets' => array(
+				'url' => 'widgets.php',
+				'btn' => 'Manage Widgets',
+				'desc' => 'Customize what appears in the right column on various areas of your site.'
+			)
+		);
+		foreach ( $addl as $k => $v ) {
+			echo '<tr><th scope="row">'. wp_kses($k,array()) .'</th><td><a href="'. esc_url($v['url']) .'" class="button" target="_blank">'. wp_kses($v['btn'],array()) .' &raquo;</a> <span class="description">'. wp_kses($v['desc'],array()) .'</span></td></tr>';
+		} ?>
+        </table><p><br /></p>
+        <h3><a name="recommended"></a>Recommended Plugins</h3>
                 <?php if ( function_exists( 'alex_recommends_widget' ) ) {
 					alex_recommends_widget();
 				} else { ?>
@@ -587,95 +549,10 @@ try{convertEntities(wpsc_adminL10n);}catch(e){};
 					?>
                     </ul>
                     <?php } ?>
-                </div>
-            </div>
-        </div>
-    </div>
+                    <p><br /></p>
     <div class="clear"></div>
     </div>
 	<?php
-			break;
-		case 'progo_shipping': ?>
-	<div class="wrap">
-    <div class="icon32" id="icon-index"><br /></div>
-    <?php progo_admin_page_tabs($thispage); ?>
-    <div id="dashboard-widgets-wrap">
-				<?php
-				require_once( WPSC_FILE_PATH . '/wpsc-admin/includes/settings-pages/shipping.php' );
-				wpsc_options_shipping(); ?>
-    </div>
-    <div class="clear"></div>
-    </div>
-		</form>
-        <?php
-			break;
-		case 'progo_gateway': ?>
-	<div class="wrap">
-    <div class="icon32" id="icon-ms-admin"><br /></div>
-    <?php progo_admin_page_tabs($thispage); ?>
-    <div id="dashboard-widgets-wrap">
-				<?php
-				require_once( WPSC_FILE_PATH . '/wpsc-admin/includes/settings-pages/gateway.php' );
-				wpsc_options_gateway(); ?>
-    </div>
-    <div class="clear"></div>
-    </div>
-		</form>
-        <?php
-			break;
-		case 'progo_appearance': ?>
-	<div class="wrap">
-    <div class="icon32" id="icon-themes"><br /></div>
-    <?php progo_admin_page_tabs($thispage);
-	
-	$options = get_option( 'progo_options' );
-	//echo '<pre style="display:none">'. print_r($options,true) .'</pre>';
-	?>
-    <form action="options.php" method="post" enctype="multipart/form-data" class="progo-form"><?php settings_fields( 'progo_options' ); ?>
-    <div id="dashboard-widgets-wrap">
-    <div id="dashboard-widgets" class="metabox-holder">
-    	<div class="postbox-container" style="width:75%">
-        	<div id="progo_theme" class="postbox">
-            	<h3 class="hndle"><span>Theme Customization</span></h3>
-                <div class="inside noh3">
-				<?php	do_settings_sections( 'progo_theme' ); ?>
-                <p class="submit"><input type="submit" name="updateoption" value="Update &raquo;" /></p>
-                </div>
-            </div>
-        	<div id="progo_info" class="postbox">
-            	<h3 class="hndle"><span>Site Info</span></h3>
-                <div class="inside noh3">
-				<?php	do_settings_sections( 'progo_info' ); ?>
-                <p class="submit"><input type="submit" name="updateoption" value="Update &raquo;" /></p>
-                </div>
-            </div>
-        	<div id="progo_checkout" class="postbox">
-            	<h3 class="hndle"><span>Checkout Page</span></h3>
-                <div class="inside noh3">
-				<?php	do_settings_sections( 'progo_checkout' ); ?>
-                <p class="submit"><input type="submit" name="updateoption" value="Update &raquo;" /></p>
-                </div>
-            </div>
-        </div>
-         <div class="postbox-container" style="width:24%">
-         	<div id="progo_widgets" class="postbox">
-            	<h3 class="hndle"><span>Sidebar Widgets</span></h3>
-                <div class="inside">
-                    <p>Your Direct Response Theme uses <em>Sidebars</em> and <em>Widgets</em> to display blocks in the bottom right area of your Direct Response pages.<br /><br /><a href="widgets.php" class="button">Configure Widgets Here &raquo;</a></p>
-                </div>
-            </div>
-         	<div id="progo_menus" class="postbox">
-            	<h3 class="hndle"><span>Footer Menu</span></h3>
-                <div class="inside">
-                    <p>Your Direct Response Theme uses <em>Menus</em> to control the Links in the footer of your site.<br /><br /><a href="nav-menus.php" class="button">Configure Menu Links Here &raquo;</a></p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="clear"></div>
-    </div>
-		</form>
-        <?php
 			break;
 		default: ?>
 	<div class="wrap">
@@ -798,10 +675,16 @@ function progo_admin_init() {
 	if ( isset( $_REQUEST['progo_admin_action'] ) ) {
 		switch( $_REQUEST['progo_admin_action'] ) {
 			case 'reset_wpsc':
-				progo_reset_wpsc();
+				progo_reset_wpsc(true);
 				break;
 			case 'reset_logo':
 				progo_reset_logo();
+				break;
+			case 'no_taxes':
+				progo_no_taxes();
+				break;
+			case 'no_shipping':
+				progo_no_shipping();
 				break;
 			case 'newdirect':
 				progo_new_direct_page( false );
@@ -821,6 +704,20 @@ function progo_admin_init() {
 			case 'colorStrongBlue':
 				progo_colorscheme_switch( 'StrongBlue' );
 				break;
+			case 'permalink_recommended':
+				progo_permalink_check( 'recommended' );
+				break;
+			case 'permalink_default':
+				progo_permalink_check( 'default' );
+				break;
+			case 'direct_set':
+				progo_direct_set();
+				break;
+		}
+	}
+	if ( $pagenow == 'admin.php' && isset( $_GET['page'] ) ) {
+		if ( $_GET['page'] == 'progo_admin' ) {
+			wp_redirect( admin_url( 'themes.php?page=progo_admin' ) );
 		}
 	}
 	
@@ -838,7 +735,7 @@ function progo_admin_init() {
 	if ( $template_file == 'directresponse.php' ) {
 		add_meta_box( "progo_direct_box", "Direct Response", "progo_direct_box", "page", "normal", "high" );
 	}
-	
+	/*
 	// hack to check the db creation for CRM ?
 	global $wpdb;
 	global $progo_direct_db_version;
@@ -865,17 +762,16 @@ function progo_admin_init() {
 		
 		add_option( "progo_direct_db_version", $progo_direct_db_version );
 	}
+	*/
 	// ACTION hooks
 	add_action( 'admin_print_styles', 'progo_admin_page_styles' );
 	add_action( 'admin_print_scripts', 'progo_admin_page_scripts' );
 	
-	// Site Settings pages
-	register_setting( 'progo_api_options', 'progo_api_options', 'progo_validate_options' );
-	
-	add_settings_section( 'progo_api', 'ProGo Themes API Key', 'progo_section_text', 'progo_api_settings' );
-	add_settings_field( 'progo_api_key', 'API Key', 'progo_field_apikey', 'progo_api_settings', 'progo_api' );
-	
+	// Appearance settings
 	register_setting( 'progo_options', 'progo_options', 'progo_validate_options' );
+	
+	add_settings_section( 'progo_api', 'ProGo Themes API Key', 'progo_section_text', 'progo_api' );
+	add_settings_field( 'progo_api_key', 'API Key', 'progo_field_apikey', 'progo_api', 'progo_api' );
 	
 	add_settings_section( 'progo_theme', 'Theme Customization', 'progo_section_text', 'progo_theme' );
 	add_settings_field( 'progo_colorscheme', 'Color Scheme', 'progo_field_color', 'progo_theme', 'progo_theme' );
@@ -889,6 +785,7 @@ function progo_admin_init() {
 	add_settings_field( 'progo_copyright', 'Copyright Notice', 'progo_field_copyright', 'progo_info', 'progo_info' );
 	add_settings_field( 'progo_secure', 'Security Logos', 'progo_field_cred', 'progo_info', 'progo_info' );
 	add_settings_field( 'progo_companyinfo', 'Company Info', 'progo_field_compinf', 'progo_info', 'progo_info' );
+	add_settings_field( 'progo_field_showtips', 'Show/Hide ProGo Tips', 'progo_field_showtips', 'progo_info', 'progo_info' );
 
 	add_settings_section( 'progo_checkout', 'Checkout Page', 'progo_section_text', 'progo_checkout' );
 	add_settings_field( 'progo_checkout', 'Checkout Headline', 'progo_field_checkout', 'progo_checkout', 'progo_checkout' );
@@ -953,7 +850,7 @@ function progo_admin_init() {
 		progo_options_defaults();
 		
 		// and send to INSTALLATION (setup step 1) page
-		wp_redirect( get_option( 'siteurl' ) . '/wp-admin/admin.php?page=progo_admin' );
+		wp_redirect( get_option( 'siteurl' ) . '/wp-admin/themes.php?page=progo_admin' );
 	}
 }
 endif;
@@ -1188,8 +1085,10 @@ if ( ! function_exists( 'progo_reset_wpsc' ) ):
  * also updates wpsc_email_receipt
  * @since Direct 1.0
  */
-function progo_reset_wpsc(){
-	check_admin_referer( 'progo_reset_wpsc' );
+function progo_reset_wpsc($fromlink = false){
+	if ( $fromlink == true ) {
+		check_admin_referer( 'progo_reset_wpsc' );
+	}
 	//set thumbnail & main image size to desired dimensions
 	update_option( 'product_image_width', 70 );
 	update_option( 'product_image_height', 70 );
@@ -1198,8 +1097,10 @@ function progo_reset_wpsc(){
 	
 	update_option( 'wpsc_email_receipt', "Any items to be shipped will be processed as soon as possible, any items that can be downloaded can be downloaded using the links on this page. All prices include tax and postage and packaging where applicable.\n\n%product_list%%total_price%%find_us%" );
 	
-	wp_redirect( get_option('siteurl') .'/wp-admin/admin.php?page=progo_admin' );
-	exit();
+	if ( $fromlink == true ) {
+		wp_redirect( admin_url('options-general.php?page=wpsc-settings') );
+		exit();
+	}
 }
 endif;
 if ( ! function_exists( 'progo_reset_logo' ) ):
@@ -1217,6 +1118,60 @@ function progo_reset_logo(){
 	update_option( 'progo_settings_just_saved', 1 );
 	
 	wp_redirect( get_option('siteurl') .'/wp-admin/admin.php?page=progo_appearance' );
+	exit();
+}
+endif;
+if ( ! function_exists( 'progo_no_taxes' ) ):
+/**
+ * @since Direct 1.0.82
+ */
+function progo_no_taxes(){
+	check_admin_referer( 'progo_no_taxes' );
+	
+	update_option( 'progo_direct_notaxes', true );
+	
+	wp_redirect( admin_url("options-general.php?page=wpsc-settings&tab=shipping") );
+	exit();
+}
+endif;
+if ( ! function_exists( 'progo_no_shipping' ) ):
+/**
+ * @since Direct 1.0.82
+ */
+function progo_no_shipping(){
+	check_admin_referer( 'progo_no_shipping' );
+	
+	update_option( 'progo_direct_noshipping', true );
+	
+	wp_redirect( admin_url("options-general.php?page=wpsc-settings&tab=gateway") );
+	exit();
+}
+endif;
+if ( ! function_exists( 'progo_permalink_check' ) ):
+/**
+ * @since Direct 1.0.82
+ */
+function progo_permalink_check( $arg ){
+	check_admin_referer( 'progo_permalink_check' );
+	
+	if ( $arg == 'recommended' ) {
+		update_option( 'permalink_structure', '/%year%/%monthnum%/%day%/%postname%/' );
+	} elseif ( $arg == 'default' ) {
+		update_option( 'progo_permalink_checked', true );
+	}
+	wp_redirect( admin_url('options-permalink.php') );
+	exit();
+}
+endif;
+if ( ! function_exists( 'progo_direct_set' ) ):
+/**
+ * @since Direct 1.0.82
+ */
+function progo_direct_set(){
+	check_admin_referer( 'progo_direct_set' );
+	update_option( 'progo_direct_onstep', 13);
+	
+	wp_redirect( admin_url("edit.php?s&post_type=page&progo_template=directresponse.php") );
 	exit();
 }
 endif;
@@ -1489,7 +1444,6 @@ function progo_options_defaults() {
 		$def = array(
 			"colorscheme" => "LightGrey",
 			"logo" => "",
-			//"favicon" => "",
 			"blogname" => get_option( 'blogname' ),
 			"blogdescription" => get_option( 'blogdescription' ),
 			"showdesc" => 1,
@@ -1497,6 +1451,7 @@ function progo_options_defaults() {
 			"copyright" => "© Copyright 2011, All Rights Reserved",
 			"credentials" => "",
 			"companyinfo" => "We sincerely thank you for your patronage.\nThe Our Company Staff\n\nOur Company, Inc.\n1234 Address St\nSuite 43\nSan Diego, CA 92107\n619-555-5555",
+			"showtips" => 1,
 			"checkout" => "Your Order is Almost Complete",
 			"button" => "BUY NOW"
 		);
@@ -1531,196 +1486,194 @@ function progo_validate_options( $input ) {
 		if ( $input['apikey'] != get_option( 'progo_direct_apikey' ) ) {
 			update_option( 'progo_direct_apikey', substr( $input['apikey'], 0, 39 ) );
 		}
-		update_option('progo_settings_just_saved',1);
-		return $input;
-	} else {
-		// do validation here...
-		$arr = array( 'blogname', 'blogdescription', 'colorscheme', 'support', 'copyright', 'button', 'companyinfo' );
-		foreach ( $arr as $opt ) {
-			$input[$opt] = wp_kses( $input[$opt], array() );
-		}
-		// we'll let CHECKOUT headline have some html in it...
-		$input['checkout'] = wp_kses( $input['checkout'], array('strong'=>array(), 'em'=>array()) );
-		
-		// opt[colorscheme] must be one of the allowed colors
-		$colors = progo_colorschemes();
-		if ( !in_array( $input['colorscheme'], $colors ) ) {
-			$input['colorscheme'] = 'LightGrey';
-		}
-		// opt[showdesc] can only be 1 or 0
-		if ( (int) $input['showdesc'] != 1 ) {
-			$input['showdesc'] = 0;
-		}
-		
-		// save blogname & blogdescription to other options as well
-		$arr = array( 'blogname', 'blogdescription' );
-		foreach ( $arr as $opt ) {
-			if ( $input[$opt] != get_option( $opt ) ) {
-				update_option( $opt, $input[$opt] );
-			}
-		}
-		
-		// check SUPPORT field & set option['support_email'] flag if we have an email
-		$input['support_email'] = is_email( $input['support'] );
-		
-			// upload error?
-			$error = '';
-		// upload the file - BASED OFF WP USERPHOTO PLUGIN
-		if ( isset($_FILES['progo_options']) && @$_FILES['progo_options']['name']['logotemp'] ) {
-			if ( $_FILES['progo_options']['error']['logotemp'] ) {
-				switch ( $_FILES['progo_options']['error']['logotemp'] ) {
-					case UPLOAD_ERR_INI_SIZE:
-					case UPLOAD_ERR_FORM_SIZE:
-						$error = "The uploaded file exceeds the max upload size.";
-						break;
-					case UPLOAD_ERR_PARTIAL:
-						$error = "The uploaded file was only partially uploaded.";
-						break;
-					case UPLOAD_ERR_NO_FILE:
-						$error = "No file was uploaded.";
-						break;
-					case UPLOAD_ERR_NO_TMP_DIR:
-						$error = "Missing a temporary folder.";
-						break;
-					case UPLOAD_ERR_CANT_WRITE:
-						$error = "Failed to write file to disk.";
-						break;
-					case UPLOAD_ERR_EXTENSION:
-						$error = "File upload stopped by extension.";
-						break;
-					default:
-						$error = "File upload failed due to unknown error.";
-				}
-			} elseif ( !$_FILES['progo_options']['size']['logotemp'] ) {
-				$error = "The file &ldquo;". $_FILES['progo_options']['name']['logotemp'] ."&rdquo; was not uploaded. Did you provide the correct filename?";
-			} elseif ( !in_array( $_FILES['progo_options']['type']['logotemp'], array( "image/jpeg", "image/pjpeg", "image/gif", "image/png", "image/x-png" ) ) ) {
-				$error = "The uploaded file type &ldquo;". $_FILES['progo_options']['type']['logotemp'] ."&rdquo; is not allowed.";
-			}
-			$tmppath = $_FILES['progo_options']['tmp_name']['logotemp'];
-			
-			$imageinfo = null;
-			if(!$error){			
-				$imageinfo = getimagesize($tmppath);
-				if ( !$imageinfo || !$imageinfo[0] || !$imageinfo[1] ) {
-					$error = __("Unable to get image dimensions.", 'user-photo');
-				} else if( $imageinfo[0] > 598 || $imageinfo[1] > 75 ) {
-					/*
-					if(userphoto_resize_image($tmppath, null, $userphoto_maximum_dimension, $error)) {
-						$imageinfo = getimagesize($tmppath);
-					}
-					*/
-					$filename = $tmppath;
-					$newFilename = $filename;
-					$jpeg_compression = 86;
-					#if(empty($userphoto_jpeg_compression))
-					#	$userphoto_jpeg_compression = USERPHOTO_DEFAULT_JPEG_COMPRESSION;
-					
-					$info = @getimagesize($filename);
-					if(!$info || !$info[0] || !$info[1]){
-						$error = __("Unable to get image dimensions.", 'user-photo');
-					}
-					//From WordPress image.php line 22
-					else if (
-						!function_exists( 'imagegif' ) && $info[2] == IMAGETYPE_GIF
-						||
-						!function_exists( 'imagejpeg' ) && $info[2] == IMAGETYPE_JPEG
-						||
-						!function_exists( 'imagepng' ) && $info[2] == IMAGETYPE_PNG
-					) {
-						$error = __( 'Filetype not supported.', 'user-photo' );
-					}
-					else {
-						// create the initial copy from the original file
-						if ( $info[2] == IMAGETYPE_GIF ) {
-							$image = imagecreatefromgif( $filename );
-						}
-						elseif ( $info[2] == IMAGETYPE_JPEG ) {
-							$image = imagecreatefromjpeg( $filename );
-						}
-						elseif ( $info[2] == IMAGETYPE_PNG ) {
-							$image = imagecreatefrompng( $filename );
-						}
-						if(!isset($image)){
-							$error = __("Unrecognized image format.", 'user-photo');
-							return false;
-						}
-						if ( function_exists( 'imageantialias' ))
-							imageantialias( $image, TRUE );
-				
-						// make sure logo is within max 598 x 75 dimensions
-						
-						// figure out the longest side
-						if ( ( $info[0] / $info[1] ) > 8 ) { // resize width to fit 
-							$image_width = $info[0];
-							$image_height = $info[1];
-							$image_new_width = 598;
-				
-							$image_ratio = $image_width / $image_new_width;
-							$image_new_height = round( $image_height / $image_ratio );
-						} else { // resize height to fit
-							$image_width = $info[0];
-							$image_height = $info[1];
-							$image_new_height = 75;
-				
-							$image_ratio = $image_height / $image_new_height;
-							$image_new_width = round( $image_width / $image_ratio );
-						}
-				
-						$imageresized = imagecreatetruecolor( $image_new_width, $image_new_height);
-						@ imagecopyresampled( $imageresized, $image, 0, 0, 0, 0, $image_new_width, $image_new_height, $info[0], $info[1] );
-				
-						// move the thumbnail to its final destination
-						if ( $info[2] == IMAGETYPE_GIF ) {
-							if (!imagegif( $imageresized, $newFilename ) ) {
-								$error = __( "Logo path invalid" );
-							}
-						}
-						elseif ( $info[2] == IMAGETYPE_JPEG ) {
-							if (!imagejpeg( $imageresized, $newFilename, $jpeg_compression ) ) {
-								$error = __( "Logo path invalid" );
-							}
-						}
-						elseif ( $info[2] == IMAGETYPE_PNG ) {
-							@ imageantialias($imageresized,true);
-							@ imagealphablending($imageresized, false);
-							@ imagesavealpha($imageresized,true);
-							$transparent = imagecolorallocatealpha($imageresized, 255, 255, 255, 0);
-							for($x=0;$x<$image_new_width;$x++) {
-								for($y=0;$y<$image_new_height;$y++) {
-								@ imagesetpixel( $imageresized, $x, $y, $transparent );
-								}
-							}
-							@ imagecopyresampled( $imageresized, $image, 0, 0, 0, 0, $image_new_width, $image_new_height, $info[0], $info[1] );
+	}
 	
-							if (!imagepng( $imageresized, $newFilename ) ) {
-								$error = __( "Logo path invalid" );
-							}
-						}
-					}
-					if(empty($error)) {
-						$imageinfo = getimagesize($tmppath);
-					}
-				}
+	// do validation here...
+	$arr = array( 'blogname', 'blogdescription', 'colorscheme', 'support', 'copyright', 'button', 'companyinfo' );
+	foreach ( $arr as $opt ) {
+		$input[$opt] = wp_kses( $input[$opt], array() );
+	}
+	// we'll let CHECKOUT headline have some html in it...
+	$input['checkout'] = wp_kses( $input['checkout'], array('strong'=>array(), 'em'=>array()) );
+	
+	// opt[colorscheme] must be one of the allowed colors
+	$colors = progo_colorschemes();
+	if ( !in_array( $input['colorscheme'], $colors ) ) {
+		$input['colorscheme'] = 'LightGrey';
+	}
+	// opt[showdesc] can only be 1 or 0
+	if ( (int) $input['showdesc'] != 1 ) {
+		$input['showdesc'] = 0;
+	}
+	
+	// save blogname & blogdescription to other options as well
+	$arr = array( 'blogname', 'blogdescription' );
+	foreach ( $arr as $opt ) {
+		if ( $input[$opt] != get_option( $opt ) ) {
+			update_option( $opt, $input[$opt] );
+		}
+	}
+	
+	// check SUPPORT field & set option['support_email'] flag if we have an email
+	$input['support_email'] = is_email( $input['support'] );
+	
+		// upload error?
+		$error = '';
+	// upload the file - BASED OFF WP USERPHOTO PLUGIN
+	if ( isset($_FILES['progo_options']) && @$_FILES['progo_options']['name']['logotemp'] ) {
+		if ( $_FILES['progo_options']['error']['logotemp'] ) {
+			switch ( $_FILES['progo_options']['error']['logotemp'] ) {
+				case UPLOAD_ERR_INI_SIZE:
+				case UPLOAD_ERR_FORM_SIZE:
+					$error = "The uploaded file exceeds the max upload size.";
+					break;
+				case UPLOAD_ERR_PARTIAL:
+					$error = "The uploaded file was only partially uploaded.";
+					break;
+				case UPLOAD_ERR_NO_FILE:
+					$error = "No file was uploaded.";
+					break;
+				case UPLOAD_ERR_NO_TMP_DIR:
+					$error = "Missing a temporary folder.";
+					break;
+				case UPLOAD_ERR_CANT_WRITE:
+					$error = "Failed to write file to disk.";
+					break;
+				case UPLOAD_ERR_EXTENSION:
+					$error = "File upload stopped by extension.";
+					break;
+				default:
+					$error = "File upload failed due to unknown error.";
 			}
-			
-			if ( !$error ){
-				$upload_dir = wp_upload_dir();
-				$dir = trailingslashit( $upload_dir['basedir'] );
-				$imagepath = $dir . $_FILES['progo_options']['name']['logotemp'];
+		} elseif ( !$_FILES['progo_options']['size']['logotemp'] ) {
+			$error = "The file &ldquo;". $_FILES['progo_options']['name']['logotemp'] ."&rdquo; was not uploaded. Did you provide the correct filename?";
+		} elseif ( !in_array( $_FILES['progo_options']['type']['logotemp'], array( "image/jpeg", "image/pjpeg", "image/gif", "image/png", "image/x-png" ) ) ) {
+			$error = "The uploaded file type &ldquo;". $_FILES['progo_options']['type']['logotemp'] ."&rdquo; is not allowed.";
+		}
+		$tmppath = $_FILES['progo_options']['tmp_name']['logotemp'];
+		
+		$imageinfo = null;
+		if(!$error){			
+			$imageinfo = getimagesize($tmppath);
+			if ( !$imageinfo || !$imageinfo[0] || !$imageinfo[1] ) {
+				$error = __("Unable to get image dimensions.", 'user-photo');
+			} else if( $imageinfo[0] > 598 || $imageinfo[1] > 75 ) {
+				/*
+				if(userphoto_resize_image($tmppath, null, $userphoto_maximum_dimension, $error)) {
+					$imageinfo = getimagesize($tmppath);
+				}
+				*/
+				$filename = $tmppath;
+				$newFilename = $filename;
+				$jpeg_compression = 86;
+				#if(empty($userphoto_jpeg_compression))
+				#	$userphoto_jpeg_compression = USERPHOTO_DEFAULT_JPEG_COMPRESSION;
 				
-				if ( !move_uploaded_file( $tmppath, $imagepath ) ) {
-					$error = "Unable to place the user photo at: ". $imagepath;
+				$info = @getimagesize($filename);
+				if(!$info || !$info[0] || !$info[1]){
+					$error = __("Unable to get image dimensions.", 'user-photo');
+				}
+				//From WordPress image.php line 22
+				else if (
+					!function_exists( 'imagegif' ) && $info[2] == IMAGETYPE_GIF
+					||
+					!function_exists( 'imagejpeg' ) && $info[2] == IMAGETYPE_JPEG
+					||
+					!function_exists( 'imagepng' ) && $info[2] == IMAGETYPE_PNG
+				) {
+					$error = __( 'Filetype not supported.', 'user-photo' );
 				}
 				else {
-					chmod($imagepath, 0666);
+					// create the initial copy from the original file
+					if ( $info[2] == IMAGETYPE_GIF ) {
+						$image = imagecreatefromgif( $filename );
+					}
+					elseif ( $info[2] == IMAGETYPE_JPEG ) {
+						$image = imagecreatefromjpeg( $filename );
+					}
+					elseif ( $info[2] == IMAGETYPE_PNG ) {
+						$image = imagecreatefrompng( $filename );
+					}
+					if(!isset($image)){
+						$error = __("Unrecognized image format.", 'user-photo');
+						return false;
+					}
+					if ( function_exists( 'imageantialias' ))
+						imageantialias( $image, TRUE );
+			
+					// make sure logo is within max 598 x 75 dimensions
 					
-					$input['logo'] = $_FILES['progo_options']['name']['logotemp'];
-		
-					/*
-					if($oldFile && $oldFile != $newFile)
-						@unlink($dir . '/' . $oldFile);
-					*/
+					// figure out the longest side
+					if ( ( $info[0] / $info[1] ) > 8 ) { // resize width to fit 
+						$image_width = $info[0];
+						$image_height = $info[1];
+						$image_new_width = 598;
+			
+						$image_ratio = $image_width / $image_new_width;
+						$image_new_height = round( $image_height / $image_ratio );
+					} else { // resize height to fit
+						$image_width = $info[0];
+						$image_height = $info[1];
+						$image_new_height = 75;
+			
+						$image_ratio = $image_height / $image_new_height;
+						$image_new_width = round( $image_width / $image_ratio );
+					}
+			
+					$imageresized = imagecreatetruecolor( $image_new_width, $image_new_height);
+					@ imagecopyresampled( $imageresized, $image, 0, 0, 0, 0, $image_new_width, $image_new_height, $info[0], $info[1] );
+			
+					// move the thumbnail to its final destination
+					if ( $info[2] == IMAGETYPE_GIF ) {
+						if (!imagegif( $imageresized, $newFilename ) ) {
+							$error = __( "Logo path invalid" );
+						}
+					}
+					elseif ( $info[2] == IMAGETYPE_JPEG ) {
+						if (!imagejpeg( $imageresized, $newFilename, $jpeg_compression ) ) {
+							$error = __( "Logo path invalid" );
+						}
+					}
+					elseif ( $info[2] == IMAGETYPE_PNG ) {
+						@ imageantialias($imageresized,true);
+						@ imagealphablending($imageresized, false);
+						@ imagesavealpha($imageresized,true);
+						$transparent = imagecolorallocatealpha($imageresized, 255, 255, 255, 0);
+						for($x=0;$x<$image_new_width;$x++) {
+							for($y=0;$y<$image_new_height;$y++) {
+							@ imagesetpixel( $imageresized, $x, $y, $transparent );
+							}
+						}
+						@ imagecopyresampled( $imageresized, $image, 0, 0, 0, 0, $image_new_width, $image_new_height, $info[0], $info[1] );
+
+						if (!imagepng( $imageresized, $newFilename ) ) {
+							$error = __( "Logo path invalid" );
+						}
+					}
 				}
+				if(empty($error)) {
+					$imageinfo = getimagesize($tmppath);
+				}
+			}
+		}
+		
+		if ( !$error ){
+			$upload_dir = wp_upload_dir();
+			$dir = trailingslashit( $upload_dir['basedir'] );
+			$imagepath = $dir . $_FILES['progo_options']['name']['logotemp'];
+			
+			if ( !move_uploaded_file( $tmppath, $imagepath ) ) {
+				$error = "Unable to place the user photo at: ". $imagepath;
+			}
+			else {
+				chmod($imagepath, 0666);
+				
+				$input['logo'] = $_FILES['progo_options']['name']['logotemp'];
+	
+				/*
+				if($oldFile && $oldFile != $newFile)
+					@unlink($dir . '/' . $oldFile);
+				*/
 			}
 		}
 	}
@@ -1795,7 +1748,7 @@ endif;
  */
 function progo_field_apikey() {
 	$opt = get_option( 'progo_direct_apikey', true );
-	echo '<input id="apikey" name="progo_api_options[apikey]" class="regular-text" type="text" value="'. esc_html( $opt ) .'" maxlength="39" />';
+	echo '<input id="apikey" name="progo_options[apikey]" class="regular-text" type="text" value="'. esc_html( $opt ) .'" maxlength="39" />';
 	$apiauth = get_option( 'progo_direct_apiauth', true );
 	switch($apiauth) {
 		case 100:
@@ -1842,6 +1795,21 @@ function progo_field_showdesc() {
 	} ?> />
 Show the Site Slogan next to the Logo at the top of <a target="_blank" href="<?php echo esc_url( trailingslashit( get_bloginfo( 'url' ) ) ); ?>">your site</a></label>
 </fieldset>
+<?php }
+endif;
+if ( ! function_exists( 'progo_field_showtips' ) ):
+/**
+ * outputs HTML for checkbox "Show Slogan" field on Site Settings page
+ * @since Direct 1.0
+ */
+function progo_field_showtips() {
+	$options = get_option( 'progo_options' ); ?>
+<label for="progo_showtips">
+<input type="checkbox" value="1" id="progo_showtips" name="progo_options[showtips]"<?php
+	if ( (int) $options['showtips'] == 1 ) {
+		echo ' checked="checked"';
+	} ?> />
+Show ProGo Tips <img src="<?php bloginfo('template_url'); ?>/images/tip.png" alt="Tip" /> for Admin users viewing the front-end of <a target="_blank" href="<?php echo esc_url( trailingslashit( get_bloginfo( 'url' ) ) ); ?>">your site</a></label>
 <?php }
 endif;
 if ( ! function_exists( 'progo_field_support' ) ):
@@ -2030,7 +1998,138 @@ function progo_set_default_body( $content ) {
 	return $content;
 }
 endif;
-
+if ( ! function_exists( 'progo_direct_reccheck' ) ):
+/**
+ * check wpsc settings dimensions for thumbnail (product_image) & product image (single_view_image)
+ * @since Direct 1.0.82
+ */
+function progo_direct_reccheck( $echo ) {
+	if ( get_option( 'product_image_width' ) == 70 && get_option( 'product_image_height' ) == 70 && get_option( 'single_view_image_width' ) == 300 && get_option( 'single_view_image_height' ) == 300 ) {
+		if ( $echo === true ) {
+			$wpec = 'options-general.php?page=wpsc-settings&tab=';
+			$tabs = array(
+				"General",
+				"Presentation",
+				"Taxes",
+				"Shipping",
+				"Payment Gateway",
+				"Checkout"
+			);
+			for ( $i = 0; $i < count($tabs); $i++ ) {
+				$l = ($tabs[$i] == "Payment Gateway" ? "gateway" : strtolower($tabs[$i]) );
+				echo ( $i > 0 ? ' &nbsp;|&nbsp; ' : '' ). '<a href="'. admin_url( $wpec . $l ) .'" target="_blank">'. $tabs[$i] .'</a>';
+			}
+		} else {
+			return true;
+		}
+	} else {
+		if ( $echo === true ) {
+			echo "<p><strong>A few WP e-Commerce Store Settings, like Product Thumbnail Sizes, differ from ProGo Themes' Recommended Settings</strong></p><p>";
+			echo '<a href="'.wp_nonce_url("admin.php?progo_admin_action=reset_wpsc", 'progo_reset_wpsc').'" class="button-primary">Click Here to Reset</a></p>';
+		} else {
+			return false;
+		}
+	}
+}
+endif;
+if ( ! function_exists( 'progo_direct_completeness' ) ):
+/**
+ * check which step / % complete current site is at
+ * @since Direct 1.0.82
+ */
+function progo_direct_completeness( $onstep ) {
+	if ( $onstep < 1 || $onstep > 13 ) {
+		$onstep = 1;
+	}
+	
+	if ( $onstep < 13 ) { // ok check it
+		switch($onstep) {
+			case 1: // check API auth
+				$apiauth = get_option( 'progo_direct_apiauth', true );
+				if( $apiauth == '100' ) {
+					$onstep = 2;
+				}
+				break;
+			case 2: // WP e-Commerce INSTALLED
+				$plugs = get_plugins();
+				if( isset( $plugs['wp-e-commerce/wp-shopping-cart.php'] ) == true ) {
+					$onstep = 3;
+				}
+				break;
+			case 3: // WP e-Commerce ACTIVATED
+				if ( is_plugin_active( 'wp-e-commerce/wp-shopping-cart.php' ) ) {
+					$onstep = 4;
+				}
+				break;
+			case 4: // ProGo Recommended Settings
+				if ( progo_direct_reccheck(false) === true ) {
+					$onstep = 5;
+				}
+				break;
+			case 5: // WPEC Store Location
+				$base_country = get_option( 'base_country', '' );
+				if ( $base_country !== '' ) {
+					$onstep = 6;
+				}
+				break;
+			case 6: // WPEC Currency
+				// now that base_country is set, if CURRENCY = 156 = NZ$ , & base_country != NZ, then needs adjusting
+				$base_country = get_option( 'base_country', '' );
+				$currency = absint( get_option( 'currency_type' ) );
+				if ( ( $currency==156 && $base_country=='NZ' ) || ( $currency != 156 ) ) {
+					$onstep = 7;
+				}
+				break;
+			case 7: // WPEC Tax Settings
+				$notaxes = get_option('progo_direct_notaxes');
+				$wpec_taxes_enabled = get_option('wpec_taxes_enabled');
+				if ( $notaxes==true || ($notaxes==false && $wpec_taxes_enabled==1) ) {
+					$onstep = 8;
+				}
+				break;
+			case 8: // WPEC Shipping
+				$noshipping = get_option('progo_direct_noshipping');
+				$wpec_noshipping = get_option('do_not_use_shipping');
+				if ( $noshipping || ( ( ! $noshipping ) && ( $wpec_noshipping != 1 ) ) ) {
+					$onstep = 9;
+				}
+				break;
+			case 9: // WPEC Payment Gateway
+				$gateways = get_option('custom_gateway_options', true);
+				$stilltest = false;
+				foreach ( $gateways as $g ) {
+					if ( $g == 'wpsc_merchant_testmode' ) {
+						$stilltest = true;
+					}
+				}
+				if ( $stilltest == false ) {
+					$onstep = 10;
+				}
+				break;
+			case 10: // Permalinks
+				$permalink = get_option( 'permalink_structure', '' );
+				$defaultok = get_option( 'progo_permalink_checked', false );
+				if ( ( $permalink != '' ) || ( ( $permalink == '' ) &&  ( $defaultok == true ) ) ) {
+					$onstep = 11;
+				}
+				break;
+			case 11: // Products
+				$prodcount = wp_count_posts( 'wpsc-product' );
+				if ( $prodcount->publish > 0 ) {
+					$onstep = 12;
+				}
+				break;
+			case 12: // at least 1 direct response page...
+				$num = count( get_posts( 'post_type=page&meta_key=_wp_page_template&meta_value=directresponse.php' ) );
+				if ( $num > 0 ) {
+					$onstep = 13;
+				}
+				break;
+		}
+	}
+	return $onstep;
+}
+endif;
 /**
  * hooked to 'admin_notices' by add_action in progo_setup()
  * used to display "Settings updated" message after Site Settings page has been saved
@@ -2047,13 +2146,13 @@ function progo_admin_notices() {
 		<p><?php
         switch($apiauth) {
 			case 'new':	// key has not been entered yet
-				echo '<a href="admin.php?page=progo_admin" title="Site Settings">Please enter your ProGo Themes API Key to Activate your theme.</a>';
+				echo '<a href="themes.php?page=progo_admin" title="Site Settings">Please enter your ProGo Themes API Key to Activate your theme.</a>';
 				break;
 			case '999': // invalid key?
-				echo 'Your ProGo Themes API Key appears to be invalid. <a href="admin.php?page=progo_admin" title="Site Settings">Please double check it.</a>';
+				echo 'Your ProGo Themes API Key appears to be invalid. <a href="themes.php?page=progo_admin" title="Site Settings">Please double check it.</a>';
 				break;
 			case '300': // wrong site URL?
-				echo '<a href="admin.php?page=progo_admin" title="Site Settings">The ProGo Themes API Key you entered</a> is already bound to another URL.';
+				echo '<a href="themes.php?page=progo_admin" title="Site Settings">The ProGo Themes API Key you entered</a> is already bound to another URL.';
 				break;
 		}
 		?></p>
@@ -2068,6 +2167,73 @@ function progo_admin_notices() {
 	</div>
 <?php
 		update_option('progo_settings_just_saved',false);
+	}
+	
+	$onstep = absint(get_option('progo_ecommerce_onstep', true));
+	
+	if ( $onstep < 13 ) {
+		$onstep = progo_direct_completeness( $onstep );
+		update_option( 'progo_ecommerce_onstep', $onstep);
+		// couldnt check step 2 before but now we have get_plugins() function
+		if ( ($onstep == 2) && ( $_REQUEST['action'] == 'install-plugin' ) ) {
+				return;
+		}
+		
+		echo '<div class="updated progo-steps">';
+		$pct = 0;
+		$nst = '';
+		switch($onstep) {
+			case 2: // WP e-Commerce INSTALLED
+				$lnk = ( function_exists( 'wp_nonce_url' ) ) ? wp_nonce_url( 'update.php?action=install-plugin&amp;plugin=wp-e-commerce', 'install-plugin_wp-e-commerce' ) : 'plugin-install.php';
+				$pct = 10;
+				$nst = '<a href="'. esc_url( $lnk ) .'">Click Here to Install the WP e-Commerce Plugin</a>';
+				break;
+			case 3: // WP e-Commerce ACTIVATED
+				$lnk = ( function_exists( 'wp_nonce_url' ) ) ? wp_nonce_url( 'plugins.php?action=activate&amp;plugin=wp-e-commerce/wp-shopping-cart.php', 'activate-plugin_wp-e-commerce/wp-shopping-cart.php' ) : 'plugins.php';
+				$pct = 15;
+				$nst = '<a href="'. esc_url( $lnk ) .'">Click Here to Activate the WP e-Commerce Plugin</a>';
+				break;
+			case 4: // ProGo Recommended Settings
+				$pct = 20;
+				$nst = 'A few WP e-Commerce Store Settings, like Product Thumbnail Sizes, differ from the Recommended Settings. <a href="'. wp_nonce_url("admin.php?progo_admin_action=reset_wpsc", 'progo_reset_wpsc') .'">Click Here to Reset</a>';
+				break;
+			case 5: // WPEC Store Location
+				$pct = 25;
+				$nst = '<a href="'. admin_url("options-general.php?page=wpsc-settings") .'">Set your Store\'s Base Country/Region</a>';
+				break;
+			case 6: // WPEC Currency
+				$pct = 30;
+				$nst = '<a href="'. admin_url("options-general.php?page=wpsc-settings") .'">Set your Store\'s Currency Settings</a>';
+				break;
+			case 7: // WPEC Tax Settings
+				$pct = 35;
+				$nst = '<a href="'. wp_nonce_url("admin.php?progo_admin_action=no_taxes", 'progo_no_taxes') .'">Click Here if your Store will NOT charge Taxes</a>. Otherwise, <a href="'. admin_url("options-general.php?page=wpsc-settings&tab=taxes") .'">configure Taxes here</a>.';
+				break;
+			case 8: // WPEC Shipping
+				$pct = 40;
+				$nst = '<a href="'. wp_nonce_url("admin.php?progo_admin_action=no_shipping", 'progo_no_shipping') .'">Click Here if your Store will NOT charge Shipping</a>. Otherwise, <a href="'. admin_url("options-general.php?page=wpsc-settings&tab=shipping") .'">configure Shipping here</a>.';
+				break;
+			case 9: // WPEC Payment Gateway
+				$pct = 50;
+				$nst = '<a href="'. admin_url("options-general.php?page=wpsc-settings&tab=gateway") .'">Please choose a Payment Gateway besides the Test Gateway</a>.';
+				break;
+			case 10: // Permalinks
+				$pct = 60;
+				$nst = 'Your <em>Permalinks</em> settings are still set to the Default option. <a href="'. wp_nonce_url("admin.php?progo_admin_action=permalink_recommended", 'progo_permalink_check') .'">Use the ProGo-Recommended "Day and name" setting</a>, <a href="'. admin_url("options-permalink.php") .'">Choose another non-Default option for yourself</a>, or <a href="'. wp_nonce_url("admin.php?progo_admin_action=permalink_default", 'progo_permalink_check') .'">keep the Default setting and move to the next step</a>.';
+				break;
+			case 11: // Product
+				$pct = 65;
+				$nst = 'You are now ready to add your first Product! Click <a href="'. admin_url('post-new.php?post_type=wpsc-product') .'">Add New</a> under the left <a href="'. admin_url('edit.php?post_type=wpsc-product') .'">Products</a> menu.';
+				break;
+			case 12: // DIRECT RESPONSE page...
+				$pct = 80;
+				$nst = 'You are now ready to <a href="'. admin_url('admin.php?progo_admin_action=newdirect') .'">Customize your first Direct Response pages</a>. When your page content is set, <a href="'. wp_nonce_url("admin.php?progo_admin_action=direct_set", 'progo_direct_set') .'">click here to remove this message</a>.';
+				break;
+			default:
+				$pct = 5;
+				$nst = '<a href="'. admin_url('themes.php?page=progo_admin') .'">Please enter your ProGo Themes API Key to Activate your theme</a>.';
+		}
+		echo '<p>Your ProGo Direct Response site is <strong>'. $pct .'% Complete</strong> - Next Step: '. $nst .'</p></div>';
 	}
 }
 
@@ -2153,7 +2319,7 @@ function progo_to_twentyten() {
 	$msg = 'This ProGo Themes site is currently not Activated.';
 	
 	if(current_user_can('edit_pages')) {
-		$msg .= '<br /><br /><a href="'. trailingslashit(get_bloginfo('url')) .'wp-admin/admin.php?page=progo_admin">Click here to update your API Key</a>';
+		$msg .= '<br /><br /><a href="'. trailingslashit(get_bloginfo('url')) .'wp-admin/themes.php?page=progo_admin">Click here to update your API Key</a>';
 	}
 	wp_die($msg);
 }
@@ -2205,7 +2371,7 @@ function progo_footer_text($text) {
 		?>
 <script type="text/javascript">
 jQuery(function($) {
-	$('#icon-edit').next().addClass('nav-tab-wrapper').html('<a href="admin.php?page=progo_admin" class="nav-tab">Installation</a><a href="admin.php?page=progo_shipping" class="nav-tab">Shipping</a><a href="admin.php?page=progo_gateway" class="nav-tab">Payment</a><a href="admin.php?page=progo_appearance" class="nav-tab">Appearance</a><a href="edit.php?post_type=wpsc-product" class="nav-tab nav-tab-active">Products</a></h2>').after('<p><a href="post-new.php?post_type=wpsc-product" class="button">Add New</a></p>');
+	$('#icon-edit').next().addClass('nav-tab-wrapper').html('<a href="themes.php?page=progo_admin" class="nav-tab">Installation</a><a href="admin.php?page=progo_shipping" class="nav-tab">Shipping</a><a href="admin.php?page=progo_gateway" class="nav-tab">Payment</a><a href="admin.php?page=progo_appearance" class="nav-tab">Appearance</a><a href="edit.php?post_type=wpsc-product" class="nav-tab nav-tab-active">Products</a></h2>').after('<p><a href="post-new.php?post_type=wpsc-product" class="button">Add New</a></p>');
 });
 </script>
         <?php
