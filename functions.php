@@ -2186,7 +2186,7 @@ function progo_admin_notices() {
 			case 2: // WP e-Commerce INSTALLED
 				$lnk = ( function_exists( 'wp_nonce_url' ) ) ? wp_nonce_url( 'update.php?action=install-plugin&amp;plugin=wp-e-commerce', 'install-plugin_wp-e-commerce' ) : 'plugin-install.php';
 				$pct = 10;
-				$nst = '<a href="'. esc_url( $lnk ) .'">Click Here to Install the WP e-Commerce Plugin</a>';
+				$nst = '<a href="'. esc_url( $lnk ) .'">Install and Activate your WP e-Commerce Plugin</a>';
 				break;
 			case 3: // WP e-Commerce ACTIVATED
 				$lnk = ( function_exists( 'wp_nonce_url' ) ) ? wp_nonce_url( 'plugins.php?action=activate&amp;plugin=wp-e-commerce/wp-shopping-cart.php', 'activate-plugin_wp-e-commerce/wp-shopping-cart.php' ) : 'plugins.php';
