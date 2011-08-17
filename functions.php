@@ -2223,7 +2223,7 @@ function progo_admin_notices() {
 				break;
 			case 11: // Product
 				$pct = 65;
-				$nst = 'You are now ready to add your first Product! Click <a href="'. admin_url('post-new.php?post_type=wpsc-product') .'">Add New</a> under the left <a href="'. admin_url('edit.php?post_type=wpsc-product') .'">Products</a> menu.';
+				$nst = 'You are now ready to add your first Product! <a href="'. admin_url('post-new.php?post_type=wpsc-product') .'">Add a New Product Now</a>.';
 				break;
 			case 12: // DIRECT RESPONSE page...
 				$pct = 80;
