@@ -2066,18 +2066,13 @@ function progo_direct_completeness( $onstep ) {
 					$onstep = 5;
 				}
 				break;
-			case 5: // WPEC Store Location
+			case 5: // WPEC Store Location & Currency
 				$base_country = get_option( 'base_country', '' );
 				if ( $base_country !== '' ) {
-					$onstep = 6;
-				}
-				break;
-			case 6: // WPEC Currency
-				// now that base_country is set, if CURRENCY = 156 = NZ$ , & base_country != NZ, then needs adjusting
-				$base_country = get_option( 'base_country', '' );
-				$currency = absint( get_option( 'currency_type' ) );
-				if ( ( $currency==156 && $base_country=='NZ' ) || ( $currency != 156 ) ) {
-					$onstep = 7;
+					$currency = absint( get_option( 'currency_type' ) );
+					if ( ( $currency==156 && $base_country=='NZ' ) || ( $currency != 156 ) ) {
+						$onstep = 7;
+					}
 				}
 				break;
 			case 7: // WPEC Tax Settings
@@ -2204,7 +2199,7 @@ function progo_admin_notices() {
 				break;
 			case 5: // WPEC Store Location
 				$pct = 25;
-				$nst = '<a href="'. admin_url("options-general.php?page=wpsc-settings") .'">Set your Store\'s Base Country/Region</a>';
+				$nst = '<a href="'. admin_url("options-general.php?page=wpsc-settings") .'">Set your Store\'s General &amp; Currency Settings, and click the \'Update\' button</a>';
 				break;
 			case 6: // WPEC Currency
 				$pct = 30;
