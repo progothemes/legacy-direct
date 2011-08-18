@@ -1275,6 +1275,8 @@ Tip: Include photography, videos, and other types of multi-media to reinforce an
 		// and set HOMEPAGE = $default_page_id
 		update_option ( 'show_on_front', 'page' );
 		update_option ( 'page_on_front', $new_page_id );
+		
+		update_option ( 'progo_firstdirectpage', $new_page_id );
 	} else {
 		wp_redirect( get_option( 'siteurl' ) . '/wp-admin/post.php?post='. $new_page_id .'&action=edit' );
 	}
@@ -2230,7 +2232,8 @@ function progo_admin_notices() {
 				break;
 			case 12: // DIRECT RESPONSE page...
 				$pct = 80;
-				$nst = 'You are now ready to <a href="'. admin_url('admin.php?progo_admin_action=newdirect') .'">Customize your first Direct Response pages</a>. When your page content is set, <a href="'. wp_nonce_url("admin.php?progo_admin_action=direct_set", 'progo_direct_set') .'">click here to remove this message</a>.';
+				$dpage = get_option('progo_firstdirectpage');
+				$nst = 'You are now ready to <a href="'. admin_url('post.php?post='. $dpage .'&action=edit') .'">Customize your first Direct Response pages</a>. When your page content is set, <a href="'. wp_nonce_url("admin.php?progo_admin_action=direct_set", 'progo_direct_set') .'">click here to remove this message</a>.';
 				break;
 			default:
 				$pct = 5;
