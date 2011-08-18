@@ -912,6 +912,9 @@ function progo_metabox_cleanup() {
 				);
 				unset($wp_meta_boxes['wpsc-product']['side']['core']['submitdiv']);
 				unset($wp_meta_boxes['wpsc-product']['side']['low']['wpsc_price_control_forms']);
+				unset($wp_meta_boxes['wpsc-product']['side']['core']['wpsc-variationdiv']);
+				unset($wp_meta_boxes['wpsc-product']['normal']['high']['wpsc_product_variation_forms']);
+				unset($wp_meta_boxes['wpsc-product']['normal']['high']['wpsc_additional_desc']);
 				// Merge the two arrays together so our widget is at the beginning
 				$wp_meta_boxes['wpsc-product']['side']['core'] = array_merge( $toparr, $wp_meta_boxes['wpsc-product']['side']['core'] );
 			}
