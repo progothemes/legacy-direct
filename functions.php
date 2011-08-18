@@ -2170,7 +2170,6 @@ function progo_admin_notices() {
 	}
 	
 	$onstep = absint(get_option('progo_ecommerce_onstep', true));
-	
 	if ( $onstep < 13 ) {
 		$onstep = progo_direct_completeness( $onstep );
 		update_option( 'progo_ecommerce_onstep', $onstep);
@@ -2239,7 +2238,9 @@ function progo_admin_notices() {
 				$pct = 5;
 				$nst = '<a href="'. admin_url('themes.php?page=progo_admin') .'">Please enter your ProGo Themes API Key to Activate your theme</a>.';
 		}
+		if( $onstep < 13 ) {
 		echo '<p>Your ProGo Direct Response site is <strong>'. $pct .'% Complete</strong> - Next Step: '. $nst .'</p></div>';
+		}
 	}
 }
 
