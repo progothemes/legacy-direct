@@ -891,9 +891,7 @@ if ( ! function_exists( 'progo_metabox_cleanup' ) ):
  * @since Direct 1.0.32
  */
 function progo_metabox_cleanup() {
-	global $wp_meta_boxes;
-	global $post_type;
-	global $post;
+	global $wp_meta_boxes, $post_type, $post;
 	
 	switch($post_type) {
 		case 'wpsc-product':
@@ -1120,7 +1118,7 @@ function progo_reset_logo(){
 	update_option( 'progo_options', $options );
 	update_option( 'progo_settings_just_saved', 1 );
 	
-	wp_redirect( get_option('siteurl') .'/wp-admin/admin.php?page=progo_appearance' );
+	wp_redirect( get_option('siteurl') .'/wp-admin/admin.php?page=progo_admin' );
 	exit();
 }
 endif;
@@ -2378,7 +2376,7 @@ function progo_footer_text($text) {
 		?>
 <script type="text/javascript">
 jQuery(function($) {
-	$('#icon-edit').next().addClass('nav-tab-wrapper').html('<a href="themes.php?page=progo_admin" class="nav-tab">Installation</a><a href="admin.php?page=progo_shipping" class="nav-tab">Shipping</a><a href="admin.php?page=progo_gateway" class="nav-tab">Payment</a><a href="admin.php?page=progo_appearance" class="nav-tab">Appearance</a><a href="edit.php?post_type=wpsc-product" class="nav-tab nav-tab-active">Products</a></h2>').after('<p><a href="post-new.php?post_type=wpsc-product" class="button">Add New</a></p>');
+	$('#icon-edit').next().addClass('nav-tab-wrapper').html('<a href="themes.php?page=progo_admin" class="nav-tab">Installation</a><a href="admin.php?page=progo_shipping" class="nav-tab">Shipping</a><a href="admin.php?page=progo_gateway" class="nav-tab">Payment</a><a href="admin.php?page=progo_admin" class="nav-tab">Appearance</a><a href="edit.php?post_type=wpsc-product" class="nav-tab nav-tab-active">Products</a></h2>').after('<p><a href="post-new.php?post_type=wpsc-product" class="button">Add New</a></p>');
 });
 </script>
         <?php
@@ -2427,7 +2425,7 @@ function progo_admin_bar_render() {
 	// add links to ProGo Direct Response pages
 	$wp_admin_bar->add_menu( array( 'parent' => 'new-content', 'id' => 'new_directresponse', 'title' => __('Direct Response Page'), 'href' => admin_url( 'admin.php?progo_admin_action=newdirect') ) );
 	$wp_admin_bar->remove_menu('appearance');
-	$wp_admin_bar->add_menu( array( 'id' => 'appearance', 'title' => __('Appearance'), 'href' => admin_url('admin.php?page=progo_appearance') ) );
+	$wp_admin_bar->add_menu( array( 'id' => 'appearance', 'title' => __('Appearance'), 'href' => admin_url('admin.php?page=progo_admin') ) );
 	// move Appearance > Widgets & Menus submenus to below our new ones
 	$wp_admin_bar->remove_menu('widgets');
 	$wp_admin_bar->remove_menu('menus');
@@ -2436,7 +2434,7 @@ function progo_admin_bar_render() {
 	
 	$avail = progo_colorschemes();
 	if ( count($avail) > 0 ) {
-		$wp_admin_bar->add_menu( array( 'parent' => 'appearance', 'id' => 'progo_colorscheme', 'title' => 'Color Scheme', 'href' => admin_url('admin.php?page=progo_appearance') ) );
+		$wp_admin_bar->add_menu( array( 'parent' => 'appearance', 'id' => 'progo_colorscheme', 'title' => 'Color Scheme', 'href' => admin_url('admin.php?page=progo_admin') ) );
 	}
 	foreach($avail as $color) {
 		$wp_admin_bar->add_menu( array( 'parent' => 'progo_colorscheme', 'id' => 'progo_colorscheme'.esc_attr($color), 'title' => esc_attr($color), 'href' => admin_url('admin.php?progo_admin_action=color'. esc_attr($color) ) ) );
