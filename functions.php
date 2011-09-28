@@ -176,7 +176,7 @@ if ( ! function_exists( 'progo_productimage' ) ):
  * echoes html for product image, or default product image if there isnt one
  * @since Direct 1.0.31
  */
-function progo_productimage($pID) {
+function progo_productimage( $pID = 0) {
 	if(($pID==0) || has_post_thumbnail( $pID ) == false) {
 		echo '<img src="'. get_bloginfo('template_url') .'/images/productimage.gif" alt="Product Image" />';
 	} else {
@@ -1230,6 +1230,21 @@ function progo_arraytotop($arr, $totop) {
 }
 endif;
 
+function progo_defaultdirectcontent() {
+	return "<h2>Write a Sub-Headline that Validates Your Offer</h2>
+This is the opening paragraph. It should contain about 3-5 lines and is very important since it needs to catch the attention of the reader. Typically questions of who, what, when, where and why about your offer are answered here. Keep it short and highlight what your product is all about.
+<ul>
+<li>Write a primary feature about your product</li>
+<li>Write a secondary feature about your product</li>
+<li>Write a tertiary feature about your product</li>
+</ul>
+<h3>Write a Secondary Subhead Example right here</h3>
+The following paragraphs go into depth about your product or offer. Give more details of the key features that deliver on your product's benefits.  Keep in mind that you are writing to your customer's needs and wants; and not your own. Break out your information- informative and written with facts, statistics and information that is credible. Be authentic and write article with clarity.
+
+Tip: Include photography, videos, and other types of multi-media to reinforce and build credibility of your product.
+\nOne more thing: it can be helpful to reiterate your Product Offer and Price again at the bottom of the page.";
+}
+
 /**
  * creates a new Direct Response PAGE with default helpful copy & meta values
  * @param isfirst if this is the first Direct page, set the Homepage and other settings
@@ -1245,18 +1260,7 @@ function progo_new_direct_page ( $isfirst ) {
 	$new_page = array(
 		'slug' => 'direct',
 		'title' => __( 'Write a Headline that Captivates', 'progo' ),
-		'content' => "<h2>Write a Sub-Headline that Validates Your Offer</h2>
-This is the opening paragraph. It should contain about 3-5 lines and is very important since it needs to catch the attention of the reader. Typically questions of who, what, when, where and why about your offer are answered here. Keep it short and highlight what your product is all about.
-<ul>
-<li>Write a primary feature about your product</li>
-<li>Write a secondary feature about your product</li>
-<li>Write a tertiary feature about your product</li>
-</ul>
-<h3>Write a Secondary Subhead Example right here</h3>
-The following paragraphs go into depth about your product or offer. Give more details of the key features that deliver on your product's benefits.  Keep in mind that you are writing to your customer's needs and wants; and not your own. Break out your information- informative and written with facts, statistics and information that is credible. Be authentic and write article with clarity.
-
-Tip: Include photography, videos, and other types of multi-media to reinforce and build credibility of your product.
-\nOne more thing: it can be helpful to reiterate your Product Offer and Price again at the bottom of the page."
+		'content' => progo_defaultdirectcontent()
 	); 	
 	$new_page_id = wp_insert_post( array(
 		'post_title' 	=>	$new_page['title'],
@@ -1457,8 +1461,8 @@ function progo_options_defaults() {
 			"blogname" => get_option( 'blogname' ),
 			"blogdescription" => get_option( 'blogdescription' ),
 			"showdesc" => 1,
-			"support" => "123-555-7890",
-			"copyright" => "© Copyright 2011, All Rights Reserved",
+			"support" => "(858) 555-1234",
+			"copyright" => "© Copyright ". date('Y') .", All Rights Reserved",
 			"credentials" => "",
 			"companyinfo" => "We sincerely thank you for your patronage.\nThe Our Company Staff\n\nOur Company, Inc.\n1234 Address St\nSuite 43\nSan Diego, CA 92107\n619-555-5555",
 			"showtips" => 1,
@@ -2327,13 +2331,34 @@ function progo_update_check($data) {
 	return $data;
 }
 
-function progo_to_twentyten() {
-	$msg = 'This ProGo Themes site is currently not Activated.';
-	
-	if(current_user_can('edit_pages')) {
-		$msg .= '<br /><br /><a href="'. trailingslashit(get_bloginfo('url')) .'wp-admin/themes.php?page=progo_admin">Click here to update your API Key</a>';
+/**
+ * check for THEME PREVIEW mode
+ * @since Direct 1.2.1
+ */
+function progo_previewcheck() {
+	global $wp_query;
+	if ( isset( $wp_query->query_vars['preview'] ) ) {
+		if ( $wp_query->query_vars['preview'] == 1 ) {
+			return true;
+		}
 	}
-	wp_die($msg);
+	return false;		
+}
+
+function progo_to_twentyten() {
+	$brickit = true;
+	// check for PREVIEW theme
+	if ( progo_previewcheck() ) {
+		$brickit = false;
+	}
+	if ( $brickit === true ) {
+		$msg = 'This ProGo Themes site is currently not Activated.';
+		
+		if(current_user_can('edit_pages')) {
+			$msg .= '<br /><br /><a href="'. trailingslashit(get_bloginfo('url')) .'wp-admin/themes.php?page=progo_admin">Click here to update your API Key</a>';
+		}
+		wp_die($msg);
+	}
 }
 
 if ( ! function_exists( 'progo_product_image_forms' ) ):

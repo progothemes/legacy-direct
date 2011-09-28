@@ -26,13 +26,17 @@
         	<div class="grid_8">
             <?php progo_sitelogo();
             $options = get_option( 'progo_options' );
-            if ( (int) $options['showdesc'] == 1 ) { ?>
+			$showdesc = true;
+			if ( isset( $options['showdesc'] ) ) {
+				$showdesc = ( (int) $options['showdesc'] == 1 );
+			}
+            if ( $showdesc === true ) { ?>
             <div id="slogan"><?php bloginfo( 'description' ); ?></div>
             <?php } ?>
             </div>
             <?php
             /* add the Top Arrow for Direct Response pages & Checkout page */
-			if ( is_page_template( 'directresponse.php' ) || is_page('checkout') ) { ?>
+			if ( is_page_template( 'directresponse.php' ) || is_page('checkout') || progo_previewcheck() ) { ?>
             <div class="grid_4 tshade">
             <div id="toparr"><a name="top"></a><?php
 			if ( is_page_template( 'directresponse.php' ) ) {
@@ -40,6 +44,8 @@
 				$custom = get_post_meta( $post->ID, '_progo' );
 				$direct = $custom[0];
 				esc_html_e( $direct[toparr] );
+			} elseif( progo_previewcheck() ) {
+				_e('LIMITED SUPPLY!');
 			}
 			?></div>
             </div>

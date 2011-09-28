@@ -25,7 +25,13 @@ $direct = $custom[0];
  <img src="<?php bloginfo('template_url'); ?>/images/weaccept.gif" alt="We Accept..." />
  <span class="support">Customer Support: <?php if($options['support_email']) {
      echo '<a href="mailto:'. esc_attr($options['support']) .'">email us</a>';
- } else echo esc_html($options['support']); ?></span>
+ } else {
+	if ( isset( $options['support'] ) ) {
+		echo esc_html($options['support']);
+	} else {
+		echo '(858) 555-1234';
+	}
+} ?></span>
  </div></div>
  
  <div class="block share"><h3 class="title"><span class="spacer">Share</span></h3><div class="inside">
@@ -40,9 +46,13 @@ $direct = $custom[0];
  <?php
  if(absint($direct[hidetest])==0) { ?>
  <div class="block test"><h3 class="title"><span class="spacer">Testimonial</span></h3><div class="inside"><span class="lq">&ldquo;</span>
- <?php echo nl2br(wp_kses($direct[testitxt],array('em'=>array(),'strong'=>array()))); ?>&rdquo;<br /><br />
- <div class="by"><?php echo nl2br(wp_kses($direct[testiauth],array('em'=>array(),'strong'=>array()))); ?></div>
- </div></div>
+ <?php if ( progo_previewcheck() == false ) {
+ echo nl2br(wp_kses($direct[testitxt],array('em'=>array(),'strong'=>array()))); ?>&rdquo;<br /><br />
+ <div class="by"><?php echo nl2br(wp_kses($direct[testiauth],array('em'=>array(),'strong'=>array()))); ?>
+ <?php } else {
+	echo __('Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation'). '&rdquo;<br /><br /><div class="by">John Q Smith<br />Arcata, CA';
+ } ?>
+ </div></div></div>
  <?php }
  
  endif; // end primary widget area ?>
