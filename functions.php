@@ -366,28 +366,8 @@ function progo_admin_menu_cleanup() {
 	
 	$menu[60][0] = 'ProGo Theme';
 	$menu[60][4] = 'menu-top menu-icon-progo';
-	/*
-	// add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position )
-	add_menu_page( 'Installation', 'ProGo Themes', 'edit_theme_options', 'progo_admin', 'progo_admin_page', get_bloginfo( 'template_url' ) .'/images/logo_menu.png', 5 );
-	add_submenu_page( 'progo_admin', 'Installation', 'Installation', 'edit_theme_options', 'progo_admin', 'progo_admin_page' );
-	add_submenu_page( 'progo_admin', 'Shipping Settings', 'Shipping Settings', 'edit_theme_options', 'progo_shipping', 'progo_admin_page' );
-	add_submenu_page( 'progo_admin', 'Payment Gateway', 'Payment Gateway', 'edit_theme_options', 'progo_gateway', 'progo_admin_page' );
-	add_submenu_page( 'progo_admin', 'Appearance', 'Appearance', 'edit_theme_options', 'progo_appearance', 'progo_admin_page' );
-	add_submenu_page( 'progo_admin', 'Sidebar Widgets', 'Sidebar Widgets', 'edit_theme_options', 'widgets.php' );
-	add_submenu_page( 'progo_admin', 'Footer Menu', 'Footer Menu', 'edit_theme_options', 'nav-menus.php' );
-	*/
 	
-	$num = count( get_posts( 'post_type=page&meta_key=_wp_page_template&meta_value=directresponse.php' ) );
-	if ( $num > 0 ) {
-		add_pages_page( 'Direct Pages', 'Direct Pages', 'edit_pages', 'edit.php?s&post_type=page&progo_template=directresponse.php' );
-	
-		if ( isset( $submenu['edit.php?post_type=page'] ) ) {
-			$submenu['edit.php?post_type=page'][5][0] = 'All Pages';
-			
-			$submenu['edit.php?post_type=page'][] = $submenu['edit.php?post_type=page'][10];
-			unset( $submenu['edit.php?post_type=page'][10] );
-		}
-	}
+	add_theme_page( 'Direct Pages', 'Direct Pages', 'edit_pages', 'edit.php?s&post_type=page&progo_template=directresponse.php' );
 	
 	// no VARIATIONS right now
 	unset( $submenu['edit.php?post_type=wpsc-product'][17] );
