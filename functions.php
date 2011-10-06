@@ -594,6 +594,7 @@ function progo_admin_page_styles() {
 				wp_enqueue_style( 'global' );
 				wp_enqueue_style( 'wp-admin' );
 				wp_enqueue_style( 'thickbox' );
+				wp_enqueue_style('farbtastic');
 				wp_enqueue_style( 'wp-e-commerce-admin', WPSC_URL .'/wpsc-admin/css/admin.css', false, false, 'all' );
 				break;
 			case 'progo_shipping' :
@@ -767,6 +768,7 @@ function progo_admin_init() {
 	add_settings_field( 'progo_showdesc', 'Show/Hide Slogan', 'progo_field_showdesc', 'progo_info', 'progo_info' );
 	add_settings_field( 'progo_support', 'Customer Support', 'progo_field_support', 'progo_info', 'progo_info' );
 	add_settings_field( 'progo_copyright', 'Copyright Notice', 'progo_field_copyright', 'progo_info', 'progo_info' );
+	add_settings_field( 'progo_footercolor', 'Footer Text Color', 'progo_field_footercolor', 'progo_info', 'progo_info' );
 	add_settings_field( 'progo_secure', 'Security Logos', 'progo_field_cred', 'progo_info', 'progo_info' );
 	add_settings_field( 'progo_companyinfo', 'Company Info', 'progo_field_compinf', 'progo_info', 'progo_info' );
 	add_settings_field( 'progo_field_showtips', 'Show/Hide ProGo Tips', 'progo_field_showtips', 'progo_info', 'progo_info' );
@@ -1044,6 +1046,12 @@ function progo_add_scripts() {
 		wp_register_script( 'progo', get_bloginfo('template_url') .'/js/progo-frontend.js', array('jquery'), '1.0', true );
 		wp_enqueue_script( 'progo' );
 		do_action('progo_frontend_scripts');
+	} else {
+		if ( isset( $_GET['page'] ) ) {
+			if ( $_GET['page'] == 'progo_admin' ) {
+				wp_enqueue_script('custom-background');
+			}
+		}
 	}
 }
 endif;
@@ -1063,8 +1071,17 @@ function progo_add_styles() {
 			wp_register_style( $scheme, get_bloginfo('template_url') .'/css/style'. $color .'.css' );
 			wp_enqueue_style( $scheme );
 		}
+		if ( $options['footercolor'] != '' ) {
+			add_action('wp_head', 'progo_custombg_color', 1000 );
+		}
 	}
 	do_action('progo_frontend_styles');
+}
+endif;
+if ( ! function_exists( 'progo_custombg_color' ) ):
+function progo_custombg_color() {
+	$options = get_option('progo_options');
+	echo '<style type="text/css">#ftr, #ftr a { color: #'. esc_attr($options['footercolor']) .' }</style>';
 }
 endif;
 if ( ! function_exists( 'progo_reset_wpsc' ) ):
@@ -1443,6 +1460,7 @@ function progo_options_defaults() {
 			"showdesc" => 1,
 			"support" => "(858) 555-1234",
 			"copyright" => "© Copyright ". date('Y') .", All Rights Reserved",
+			"footercolor" => "",
 			"credentials" => "",
 			"companyinfo" => "We sincerely thank you for your patronage.\nThe Our Company Staff\n\nOur Company, Inc.\n1234 Address St\nSuite 43\nSan Diego, CA 92107\n619-555-5555",
 			"showtips" => 1,
@@ -1483,7 +1501,7 @@ function progo_validate_options( $input ) {
 	}
 	
 	// do validation here...
-	$arr = array( 'blogname', 'blogdescription', 'colorscheme', 'support', 'copyright', 'button', 'companyinfo' );
+	$arr = array( 'blogname', 'blogdescription', 'colorscheme', 'support', 'copyright', 'footercolor', 'button', 'companyinfo' );
 	foreach ( $arr as $opt ) {
 		$input[$opt] = wp_kses( $input[$opt], array() );
 	}
@@ -1494,6 +1512,13 @@ function progo_validate_options( $input ) {
 	$colors = progo_colorschemes();
 	if ( !in_array( $input['colorscheme'], $colors ) ) {
 		$input['colorscheme'] = 'LightGrey';
+	}
+	
+	$color = preg_replace('/[^0-9a-fA-F]/', '', $input['footercolor']);
+	if ( strlen($color) == 6 || strlen($color) == 3 ) {
+		$input['footercolor'] = $color;
+	} else {
+		$input['footercolor'] = '';
 	}
 	// opt[showdesc] can only be 1 or 0
 	if ( (int) $input['showdesc'] != 1 ) {
@@ -1828,6 +1853,22 @@ function progo_field_copyright() {
 	?>
 <input id="progo_copyright" name="progo_options[copyright]" value="<?php esc_html_e( $options['copyright'] ); ?>" class="regular-text" type="text" /><br />
 <span class="description">Copyright notice that appears on the right side of your site's footer.</span>
+<?php }
+endif;
+if ( ! function_exists( 'progo_field_footercolor' ) ):
+/**
+ * outputs HTML for "Footer Text Color" field on Site Settings page
+ * @since Business Pro 1.0
+ */
+function progo_field_footercolor() {
+	$options = get_option( 'progo_options' );
+	?>
+<fieldset><legend class="screen-reader-text"><span><?php _e( 'Background Color' ); ?></span></legend>
+<?php $show_clear = ( $options['footercolor'] != '' ) ? '' : ' style="display:none"'; ?>
+<input type="text" name="progo_options[footercolor]" id="background-color" value="#<?php echo esc_attr( $options['footercolor'] ) ?>" />
+<a class="hide-if-no-js" href="#" id="pickcolor"><?php _e('Select a Color'); ?></a> <span <?php echo $show_clear; ?>class="hide-if-no-js" id="clearcolor"> (<a href="#"><?php _e( 'Clear' ); ?></a>)</span>
+<div id="colorPickerDiv" style="z-index: 100; background:#eee; border:1px solid #ccc; position:absolute; display:none;"></div>
+</fieldset>
 <?php }
 endif;
 if ( ! function_exists( 'progo_field_cred' ) ):
