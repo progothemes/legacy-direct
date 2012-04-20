@@ -853,9 +853,9 @@ function progo_direct_widgets() {
 		'id' => 'widgets',
 		'description' => 'For the area in the bottom right column of Direct Response pages. If no widgets appear below, the "Easy &amp; Secure", "Share", and "Testimonials" will show.',
 		'before_widget' => '<div class="block %1$s %2$s">',
-		'after_widget' => '</div></div>',
+		'after_widget' => '</div>',
 		'before_title' => '<h3 class="title"><span class="spacer">',
-		'after_title' => '</span></h3><div class="inside">'
+		'after_title' => '</span></h3>'
 	));
 	
 	$progo_widgets = array( 'EasySecure', 'Share', 'Testimonials' );
@@ -2478,18 +2478,18 @@ function progo_admin_bar_render() {
 	// add links to ProGo Direct Response pages
 	$wp_admin_bar->add_menu( array( 'parent' => 'new-content', 'id' => 'new_directresponse', 'title' => __('Direct Response Page'), 'href' => admin_url( 'admin.php?progo_admin_action=newdirect') ) );
 	$wp_admin_bar->remove_menu('appearance');
-	$wp_admin_bar->add_menu( array( 'id' => 'appearance', 'title' => __('Appearance'), 'href' => admin_url('themes.php?page=progo_admin') ) );
+	$wp_admin_bar->add_menu( array( 'id' => 'progo', 'title' => __('ProGo Theme'), 'href' => admin_url('themes.php?page=progo_admin') ) );
 	// move Appearance > Widgets & Menus submenus to below our new ones
 	$wp_admin_bar->remove_menu('widgets');
 	$wp_admin_bar->remove_menu('menus');
-	$wp_admin_bar->add_menu( array( 'parent' => 'appearance', 'id' => 'progothemeoptions', 'title' => __('Theme Options'), 'href' => admin_url('themes.php?page=progo_admin') ) );
-	$wp_admin_bar->add_menu( array( 'parent' => 'appearance', 'id' => 'background', 'title' => __('Background'), 'href' => admin_url('themes.php?page=custom-background') ) );
-	$wp_admin_bar->add_menu( array( 'parent' => 'appearance', 'id' => 'widgets', 'title' => __('Widgets'), 'href' => admin_url('widgets.php') ) );
-	$wp_admin_bar->add_menu( array( 'parent' => 'appearance', 'id' => 'menus', 'title' => __('Menus'), 'href' => admin_url('nav-menus.php') ) );
+	$wp_admin_bar->add_menu( array( 'parent' => 'progo', 'id' => 'progothemeoptions', 'title' => __('Theme Options'), 'href' => admin_url('themes.php?page=progo_admin') ) );
+	$wp_admin_bar->add_menu( array( 'parent' => 'progo', 'id' => 'background', 'title' => __('Background'), 'href' => admin_url('themes.php?page=custom-background') ) );
+	$wp_admin_bar->add_menu( array( 'parent' => 'progo', 'id' => 'widgets', 'title' => __('Widgets'), 'href' => admin_url('widgets.php') ) );
+	$wp_admin_bar->add_menu( array( 'parent' => 'progo', 'id' => 'menus', 'title' => __('Menus'), 'href' => admin_url('nav-menus.php') ) );
 	
 	$avail = progo_colorschemes();
 	if ( count($avail) > 0 ) {
-		$wp_admin_bar->add_menu( array( 'parent' => 'appearance', 'id' => 'progo_colorscheme', 'title' => 'Color Scheme', 'href' => admin_url('admin.php?page=progo_admin') ) );
+		$wp_admin_bar->add_menu( array( 'parent' => 'progo', 'id' => 'progo_colorscheme', 'title' => 'Color Scheme', 'href' => admin_url('admin.php?page=progo_admin') ) );
 	}
 	foreach($avail as $color) {
 		$wp_admin_bar->add_menu( array( 'parent' => 'progo_colorscheme', 'id' => 'progo_colorscheme'.esc_attr($color), 'title' => esc_attr($color), 'href' => admin_url('admin.php?progo_admin_action=color'. esc_attr($color) ) ) );

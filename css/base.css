@@ -192,16 +192,14 @@ fieldset.check td { vertical-align:middle; }
 label.cb { float:left; margin: 0 0 0 19px; font-weight: bold; }
 
 #secondary { float: left; width: 100%; margin-top: 35px; }
-.block { float: left; width: 97%; border: 1px solid #ccc; margin: 0 0 16px }
-.block h3.title { float: left; width: 100%; padding: 9px 0; margin: 0; font: 19px/23px Arial, Helvetica, sans-serif; color: #3c3c3c; background: url(../images/h3b.png) repeat-x 0 100%; }
+.block { float: left; width: 248px; border: 1px solid #ccc; margin: 0 0 16px; padding: 20px 25px; font-size:14px; line-height:21px; position: relative }
+.block h3.title { float: left; width: 298px; padding: 9px 0; margin: -20px -25px 20px; font: 19px/23px Arial, Helvetica, sans-serif; color: #3c3c3c; background: url(../images/h3b.png) repeat-x 0 100%; }
 .block h3.title .spacer { float: left; margin: 0 25px; }
-.block .inside { float: left; width: 85%; padding: 20px 0 21px 25px; font-size:14px; line-height:21px }
-.block.secure .inside .support { font-size: 16px; color: #000; position: relative; top: 5px }
-.block.secure .inside .support a { text-decoration: none; color: #000 }
-.block.secure .inside .support a:hover { text-decoration: underline; }
-.block.test .inside { position: relative; }
-.block.test .inside .lq { position: absolute; top: 20px; left: 19px; }
-.block.test .inside .by { font-size: 12px; line-height:16px; font-style:italic; }
+.block.secure .support { font-size: 16px; color: #000; position: relative; top: 5px }
+.block.secure .support a { text-decoration: none; color: #000 }
+.block.secure .support a:hover { text-decoration: underline; }
+.block.test .lq { position: absolute; top: 20px; left: 19px; }
+.block.test .by { font-size: 12px; line-height:16px; font-style:italic; }
 .block.share .FBConnectButton_Simple { float: left; width: 30px; height: 30px; background: url(../images/share.gif) no-repeat 0 0; }
 .block.share a { float: left; width: 30px; height: 30px; margin-right: 10px; }
 .block.share a.twitter { background: url(../images/share.gif) no-repeat -30px 0; text-indent:-999em }
