@@ -2340,11 +2340,11 @@ function progo_update_check($data) {
 		} else {
 			update_option( 'progo_direct_apiauth', 'new' );
 		}
-		if ( version_compare($data->checked[direct], $response[new_version], '<') ) {
-			$data->response[direct] = array(
-				'new_version' => $response[new_version],
-				'url' => $response[url],
-				'package' => $response[package]
+		if ( version_compare($data->checked['direct'], $response['new_version'], '<') ) {
+			$data->response['direct'] = array(
+				'new_version' => $response['new_version'],
+				'url' => $response['url'],
+				'package' => $response['package']
 			);
 		}
 	}
